@@ -1,0 +1,35 @@
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    background-image: url(/images/bg.jpg);
+    background-size: cover;
+}
+
+.rounded-x {
+    border-radius: 25%;
+}
+
+.text-menu-color {
+    color: darkblue;
+}
+
+.menu {
+    background-color: rgb(104,108,188);
+}
+
+.cursor-pointer{
+    cursor : pointer
+}

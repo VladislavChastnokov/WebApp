@@ -1,0 +1,76 @@
+﻿@model IEnumerable<WebApp.Models.Institution>
+<div class="col">
+    <table class="table table-sm table-primary w-auto align-middle caption-top">
+        <caption>
+            <span class="h5 text-black">Учебные заведения</span>
+            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#instModal" onclick="readyForm('', -1)">Добавить</button>
+            @if (ViewBag.InstitutionErrorMessage != null)
+            {
+                <span class="h5 text-danger">@ViewBag.InstitutionErrorMessage</span>
+                ViewBag.InstitutionErrorMessage = null;
+            }
+        </caption>
+        <thead>
+            <tr>
+                <th scope="col">Название</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.OrderBy(x => x.Id))
+            {
+                <tr>
+                    <td>
+                        @item.InstitutionName
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="collapse" data-bs-target="@string.Format("#SpecView{0}", item.Id)" aria-expanded="false" aria-controls="@string.Format("SpecView{0}", item.Id)">Направления/Специальности</button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#instModal" onclick="readyForm('@item.InstitutionName', @item.Id)">Редактировать</button>
+                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteConfirmation" onclick="setRecordForDeletion('Institution', @item.Id)">Удалить</button>
+                    </td>
+                </tr>
+                <tr id="@string.Format("SpecView{0}", item.Id)" class="@string.Format("collapse {0}", ViewBag.KeepSectionOpen != null ? ViewBag.KeepSectionOpen.ToString()==item.Id.ToString() ? "show" : "" : "")">
+                    <td colspan="3">
+                        <table class="table table-sm table-primary w-100 align-middle caption-top">
+                            <caption>
+                                <span class="h5 text-black">Направления/специальности</span>
+                                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#specModal" onclick="readySpecForm('', '', -1, @item.Id)">Добавить</button>
+                                @if (ViewBag.SpecialityErrorMessage != null && ViewBag.InstitutionId == item.Id.ToString())
+                                {
+                                    <span class="h5 text-danger">@ViewBag.SpecialityErrorMessage</span>
+                                    ViewBag.SpecialityErrorMessage = null;
+                                }
+                            </caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Код</th>
+                                    <th scope="col">Название</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (Speciality spec in item.Specialities.OrderBy(x => x.Id))
+                                {
+                                    <tr>
+                                        <td>@spec.SpecialityCode</td>
+                                        <td>@spec.SpecialityName</td>
+                                        <td>
+                                            <a class="btn btn-primary btn-sm" href="@Url.Action("Plan", "Administration", new { Id = spec.Id })" role="button">Дисциплины</a>
+                                            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#specModal" onclick="readySpecForm('@spec.SpecialityName', '@spec.SpecialityCode', @spec.Id, @item.Id)">Редактировать</button>
+                                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteConfirmation" onclick="setRecordForDeletion('Speciality', @spec.Id)">Удалить</button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+

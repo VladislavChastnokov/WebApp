@@ -1,0 +1,35 @@
+﻿@model IEnumerable<WebApp.Models.DisciplineModule>
+
+<div class="col">
+    <table class="table table-sm table-primary w-100 align-middle caption-top">
+        <caption>
+            <span class="h5 text-black">Модули</span>
+            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#moduleModal" onclick="setModuleForm(-1, @ViewBag.SpecialityId, '', '')">Добавить</button>
+            @if (ViewBag.ModuleError != null)
+            {
+                <span class="h5 text-danger">@ViewBag.ModuleError</span>
+                ViewBag.ModuleError = null;
+            }
+        </caption>
+        <thead>
+            <tr>
+                <th>Код</th>
+                <th>Название</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (DisciplineModule module in Model)
+            {
+                <tr>
+                    <td>@module.ModuleCode</td>
+                    <td>@module.ModuleName</td>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#moduleModal" onclick="setModuleForm(@module.Id, @module.SpecialityId, '@module.ModuleCode', '@module.ModuleName')">Редактировать</button>
+                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteConfirmation" onclick="setRecordForDeletion('DisciplineModule', @module.Id)">Удалить</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

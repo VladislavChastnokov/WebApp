@@ -1,0 +1,115 @@
+﻿
+@{
+    ViewData["Title"] = ViewBag.Speciality;
+}
+<div class="container-fluid">
+
+    <h5 class="text-black">@ViewBag.Speciality</h5>
+    <div class="row">
+        @{
+            await Html.RenderPartialAsync("Modules", Model.Modules, ViewData);
+            await Html.RenderPartialAsync("Disciplines", Model.Disciplines, ViewData);
+        }
+    </div>
+   
+    <div class="modal fade" id="moduleModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="@Url.Action("EditModule", "Administration")" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Модуль</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input id="moduleId" name="id" type="hidden" value="" required />
+                        <input id="specId" name="spec" type="hidden" value="" required />
+                        <div class="form-group">
+                            <label class="form-label">Код</label>
+                            <input type="text" id="moduleCode" name="code" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Название</label>
+                            <input type="text" id="moduleName" name="name" class="form-control" required />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button id="moduleModalSubmit" type="submit" class="btn btn-primary"></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="discModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="@Url.Action("EditDiscipline", "Administration")" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Дисциплина</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input id="discId" name="id" type="hidden" value="" required />
+                        <div class="form-group">
+                            <label class="form-label">Модуль</label>
+                            <select id="mId" class="form-select" name="module" value="" asp-items="ViewBag.ModulesSelect" required>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Название</label>
+                            <input type="text" id="discName" name="name" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Семестр</label>
+                            <select id="semester" name="semester" class="form-select" asp-items="ViewBag.SemestersSelect" required >
+
+                            </select>
+                        </div>
+                        <div id="practiceSelect" class="form-group">
+                            <label class="form-label" for="studyPractice">Учебная практика</label>
+                            <input type="checkbox" id="studyPractice" name="studyPractice" value="true" class="form-check-input" onclick="checkBoxClick(this)" required />
+                            <label class="form-label" for="workPractice">Производственная практика</label>
+                            <input type="checkbox" id="workPractice" name="workPractice" value="true" class="form-check-input" onclick="checkBoxClick(this)" required />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button id="discModalSubmit" type="submit" class="btn btn-primary"></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteConfirmation" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="@Url.Action("Delete", "Administration")" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Удаление</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input id="recordId" class="form-control" type="hidden" name="id" />
+                        <input id="recordType" class="form-control" type="hidden" name="type" />
+                        <label class="control-label">Удаление может привести к потере связанных данных, Вы действительно хотите удалить запись?</label>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="submit" class="btn btn-danger">Удалить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script ></script>
+

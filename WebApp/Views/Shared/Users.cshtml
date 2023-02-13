@@ -1,0 +1,75 @@
+﻿@model IEnumerable<WebApp.Models.User>
+
+<div class="col">
+    <table class="table table-sm table-primary w-auto align-middle caption-top">
+        <caption>
+            <span class="h5 text-black">Пользователи</span>
+            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#newUser">Добавить</button>
+            @if (ViewBag.NewUserErrorMessage != null)
+            {
+                <span class="h5 text-danger">@ViewBag.NewUserErrorMessage</span>
+                ViewBag.NewUserErrorMessage = null;
+            }
+        </caption>
+        <thead>
+            <tr>
+                <th scope="col">Логин</th>
+                <th scope="col">Фамилия</th>
+                <th scope="col">Имя</th>
+                <th scope="col">Отчество</th>
+                <th scope="col">Роль</th>
+                <th scope="col">Учебные заведеня</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model.OrderBy(x => x.Id))
+            {
+                <tr>
+                    <td>
+                        @user.Login
+                    </td>
+                    <td>
+                        @user.LastName
+                    </td>
+                    <td>
+                        @user.FirstName
+                    </td>
+                    <td>
+                        @user.MiddleName
+                    </td>
+                    <td>
+                        @user.Role.RoleName
+                    </td>
+                    <td>
+                        @if (user.RoleId == 2)
+                        {
+                            <table class="table table-sm table-borderless p-0 m-0">
+                                @foreach (InstitutionAssignment assignment in user.InstitutionAssignments.OrderBy(x => x.Id))
+                                {
+                                    <tr>
+                                        <td>
+                                            @assignment.Institution.InstitutionName
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-link" data-bs-toggle="modal" data-bs-target="#deleteConfirmation" onclick="setRecordForDeletion('InstitutionAssignment', @assignment.Id)"><img class="img-fluid" src="/images/del.jpg" /></button>
+                                        </td>
+                                    </tr>
+                                }
+                                <tr>
+                                    <td colspan="2">
+                                        <a class="link-success cursor-pointer text-decoration-none" data-bs-toggle="modal" data-bs-target="#isntitutionAddAssignment" onclick="setId('#idField',@user.Id)">+ Добавить</a>
+                                    </td>
+                                </tr>
+                            </table>
+                        }
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#changePassword" onclick="setId('#userIdField', @user.Id)">Изменить пароль</button>
+                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteConfirmation" onclick="setRecordForDeletion('User', @user.Id)">Удалить</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

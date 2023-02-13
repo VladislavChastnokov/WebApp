@@ -1,0 +1,189 @@
+﻿
+@{
+    ViewData["Title"] = "Администрирование";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        @{
+            await Html.RenderPartialAsync("Users", Model.Users, ViewData);
+            await Html.RenderPartialAsync("Institutions", Model.Institutions, ViewData);
+        }
+    </div>
+</div>
+<div>
+
+
+    <div class="modal fade" id="deleteConfirmation" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="@Url.Action("Delete", "Administration")" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Удаление</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input id="recordId" class="form-control" type="hidden" name="id" />
+                        <input id="recordType" class="form-control" type="hidden" name="type" />
+                        <label class="control-label">Удаление может привести к потере связанных данны, Вы действительно хотите удалить запись?</label>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="submit" class="btn btn-danger">Удалить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="isntitutionAddAssignment" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="@Url.Action("AddInstitutionAssignment","Administration")" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Добавить учебное заведение</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input id="idField" name="id" type="hidden" value="" required />
+                        <select name="InstitutionId" class="form-select" asp-items="ViewBag.Institutions"></select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="submit" class="btn btn-primary">Добавить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="changePassword" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="@Url.Action("ChangePassword","Administration")" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Смена пароля</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input id="userIdField" name="id" type="hidden" value="" required />
+                        <input name="password" class="form-control" type="password" required />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="newUser" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="@Url.Action("AddUser","Administration")" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Новый пользователь</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body bg-pr">
+                        <div class="form-group">
+                            <label class="control-label">Логин</label>
+                            <input type="text" name="login" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Пароль</label>
+                            <input type="password" name="password" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Фамилия</label>
+                            <input type="text" name="lastName" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Имя</label>
+                            <input type="text" name="firstName" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Отчество</label>
+                            <input type="text" name="middleName" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Роль</label>
+                            <select name="role" class="form-control" asp-items="ViewBag.Roles" required>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="submit" class="btn btn-primary">Добавить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="instModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="@Url.Action("EditInstitution", "Administration")" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Учебное заведение</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input id="instId" name="id" type="hidden" value="" required />
+                        <input type="text" id="instName" name="name" class="form-control" required />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button id="instModalSubmit" type="submit" class="btn btn-primary"></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="specModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="@Url.Action("EditSpeciality", "Administration")" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Направление/специальность</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input id="specId" name="id" type="hidden" value="" required />
+                        <input id="specInstId" name="instId" type="hidden" value="" required />
+                        <div class="form-group">
+                            <label class="control-label">Код</label>
+                            <input type="text" id="specCode" name="code" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Название</label>
+                            <input type="text" id="specName" name="name" class="form-control" required />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button id="specModalSubmit" type="submit" class="btn btn-primary"></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
