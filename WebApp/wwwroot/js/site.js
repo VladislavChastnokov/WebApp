@@ -60,15 +60,32 @@ function setDiscForm(id, module, name, sem) {
     $("#semester").val(sem).change();
     if (id != -1) {
         $("#practiceSelect").hide();
+        $("#semesterSelect").hide();
         $("#studyPractice").removeAttr("required");
         $("#workPractice").removeAttr("required");
         $("#discModalSubmit").text("Сохранить");
     }
     else {
         $("#practiceSelect").show();
+        $("#semesterSelect").show();
         $("#studyPractice").attr("required", true);
         $("#workPractice").attr("required", true);
         $("#discModalSubmit").text("Добавить");
+    }
+}
+
+function semSelectChanged(v) {
+    if (v == 7) {
+        $("#practiceSelect").hide();
+        $("#studyPractice").prop("checked", false);
+        $("#workPractice").prop("checked", false);
+        $("#studyPractice").removeAttr("required");
+        $("#workPractice").removeAttr("required");
+    }
+    else {
+        $("#practiceSelect").show();
+        $("#studyPractice").attr("required", true);
+        $("#workPractice").attr("required", true);
     }
 }
 
@@ -83,4 +100,62 @@ function checkBoxClick(x) {
             $("#workPractice").attr("required", true);
         }
     }
+}
+
+function setStudentForm(id, spec, lastName, firstName, middleName, kurs) {
+    $("#studId").val(id);
+    $("#studSpec").val(spec);
+    $("#lastName").val(lastName);
+    $("#firstName").val(firstName);
+    $("#middleName").val(middleName);
+    $("#kurs").val(kurs).change();
+    if (id != -1) {
+        $("#studentModalSubmit").text("Сохранить");
+    }
+    else {
+        $("#studentModalSubmit").text("Добавить");
+    }
+}
+
+function selectChanged(target, action, value) {
+    $.ajax({
+        type: "GET",
+        url: "/Examination/" + action,
+        data: { Id: value },
+        success: function (data) {
+            var s = '<option value=""></option>';
+            for (var i = 0; i < data.length; i++) {
+                s += '<option value="' + data[i].id + '">' + data[i].name + '</option>';
+            }
+            $("#" + target).html(s);
+            $("#" + target).change();
+        }
+    });
+}
+
+function beginEdit(id) {
+    $("#edit" + id + " > select").val($("#display" + id).text()).change();
+    $("#display" + id).hide();
+    $("#edit" + id).show();
+}
+
+function endEdit(id, save) {
+    if (save) {
+        $.ajax({
+            type: "POST",
+            url: "/Examination/SaveMark",
+            data: { Id: id, Mark: $("#edit" + id + " > select").val() },
+            success: function (data) {
+                $("#display" + id).text($("#edit" + id + " > select").val());
+                $("#avgD" + data.disc).text(data.avgD);
+                $("#avgS" + data.id + "-avgDM" + data.dm + "-avgPr" + data.pr).text(data.avgS);
+            },
+            fail: function () {
+                alert('Ошибка!');
+            }
+        });
+
+    }
+    $("#display" + id).show();
+    $("#edit" + id).hide();
 }

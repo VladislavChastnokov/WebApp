@@ -6,10 +6,21 @@
 
     <h5 class="text-black">@ViewBag.Speciality</h5>
     <div class="row">
-        @{
-            await Html.RenderPartialAsync("Modules", Model.Modules, ViewData);
-            await Html.RenderPartialAsync("Disciplines", Model.Disciplines, ViewData);
-        }
+        <div class="col">
+            @{
+                await Html.RenderPartialAsync("Modules", Model.Modules, ViewData);
+            }
+        </div>
+        <div class="col">
+            @{
+                await Html.RenderPartialAsync("Disciplines", Model.Disciplines, ViewData);
+            }
+        </div>
+        <div class="col">
+            @{
+                await Html.RenderPartialAsync("Students", Model.Students, ViewData);
+            }
+        </div>
     </div>
    
     <div class="modal fade" id="moduleModal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -64,9 +75,9 @@
                             <label class="form-label">Название</label>
                             <input type="text" id="discName" name="name" class="form-control" required />
                         </div>
-                        <div class="form-group">
+                        <div id="semesterSelect" class="form-group">
                             <label class="form-label">Семестр</label>
-                            <select id="semester" name="semester" class="form-select" asp-items="ViewBag.SemestersSelect" required >
+                            <select id="semester" name="semester" class="form-select" asp-items="ViewBag.SemestersSelect" onchange="semSelectChanged(this.value)" required >
 
                             </select>
                         </div>
@@ -109,7 +120,48 @@
             </div>
         </div>
     </div>
-</div>
 
-<script ></script>
+    <div class="modal fade" id="studentModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="@Url.Action("EditStudent", "Administration")" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Студент</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input id="studId" name="id" type="hidden" value="" required />
+                        <input id="studSpec" name="spec" type="hidden" value="" required />
+                        <div class="form-group">
+                            <label class="form-label">Фамилия</label>
+                            <input type="text" id="lastName" name="lastName" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Имя</label>
+                            <input type="text" id="firstName" name="firstName" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Отчество</label>
+                            <input type="text" id="middleName" name="middleName" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Курс</label>
+                            <select class="form-select" id="kurs" name="kurs" required>
+                                <option value="2">2 курс</option>
+                                <option value="3">3 курс</option>
+                                <option value="4">4 курс</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button id="studentModalSubmit" type="submit" class="btn btn-primary"></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 

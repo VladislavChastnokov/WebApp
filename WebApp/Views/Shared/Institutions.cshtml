@@ -58,8 +58,8 @@
                                         <td>@spec.SpecialityCode</td>
                                         <td>@spec.SpecialityName</td>
                                         <td>
-                                            <a class="btn btn-primary btn-sm" href="@Url.Action("Plan", "Administration", new { Id = spec.Id })" role="button">Дисциплины</a>
-                                            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#specModal" onclick="readySpecForm('@spec.SpecialityName', '@spec.SpecialityCode', @spec.Id, @item.Id)">Редактировать</button>
+                                            <a class="btn btn-primary btn-sm" href="@Url.Action("Plan", "Administration", new { Id = spec.Id })" role="button">Дисциплины\Студенты</a>
+                                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#specModal" onclick="readySpecForm('@spec.SpecialityName', '@spec.SpecialityCode', @spec.Id, @item.Id)">Редактировать</button>
                                             <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteConfirmation" onclick="setRecordForDeletion('Speciality', @spec.Id)">Удалить</button>
                                         </td>
                                     </tr>

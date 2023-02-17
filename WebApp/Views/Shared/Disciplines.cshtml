@@ -1,6 +1,5 @@
 ﻿@model IEnumerable<WebApp.Models.Discipline>
 
-<div class="col">
     <table class="table table-sm table-primary w-auto align-middle caption-top">
         <caption>
             <span class="h5 text-black">Дисциплины</span>
@@ -11,78 +10,51 @@
                 ViewBag.DiscError = null;
             }
         </caption>
-        <tbody>
-            @foreach (Semester semester in ViewBag.Semesters)
+    @foreach (Semester semester in ViewBag.Semesters)
+    {
+        <thead>
+            <tr>
+                <th colspan="2">
+                    @semester.Caption
+                </th>
+            </tr>
+        </thead>
+            @foreach (var module in Model.Where(d => d.Semester == semester.Id).GroupBy(d => d.Module).OrderBy(m => m.Key.Id))
             {
-                <tr>
-                    <td class="pt-0 pb-0">
-                        <table class="table table-sm table-primary w-100 align-middle caption-top m-0">
-                            <thead>
-                                <tr>
-                                    <th class="p-0">@semester.Caption</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="p-0">
-                                        @foreach (var module in Model.Where(d => d.Semester == semester.Id).GroupBy(d => d.Module).OrderBy(m => m.Key.Id))
-                                        {
-                                            <table class="table table-sm table-primary w-auto align-middle caption-top m-0 p-0">
-                                                <thead>
-                                                    <tr>
-                                                        <th class="p-0">
-                                                            @string.Format("{0} {1}", module.Key.ModuleCode, module.Key.ModuleName)
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td class="p-0">
-                                                            @foreach (var practiceType in module.GroupBy(d => d.PracticeType))
-                                                            {
-                                                                <table class="table table-sm table-primary w-auto align-middle caption-top m-0 p-0">
-                                                                    <thead>
-                                                                        <tr>
-                                                                            <th class="p-0">
-                                                                                @practiceType.Key.PracticeTypeName
-                                                                            </th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        <tr>
-                                                                            <td class="p-0">
-                                                                                @foreach (var disc in practiceType.OrderBy(d => d.Id))
-                                                                                {
-                                                                                    <table class="table table-sm table-primary w-auto align-middle caption-top m-0">
-                                                                                        <tr>
-                                                                                            <td class="p-0">
-                                                                                                @disc.DisciplineName
-                                                                                            </td>
-                                                                                            <td class="p-0">
-                                                                                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#discModal" onclick="setDiscForm(@disc.Id, @disc.ModuleId, '@disc.DisciplineName', @disc.Semester)">Редактировать</button>
-                                                                                                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteConfirmation" onclick="setRecordForDeletion('Discipline', @disc.Id)">Удалить</button>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </table>
-                                                                                }
-                                                                            </td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            }
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        }
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        
-                    </td>
-                </tr>
+                <thead>
+                    <tr>
+                        <th colspan="2">
+                            @string.Format("{0} {1}", module.Key.ModuleCode, module.Key.ModuleName)
+                        </th>
+                    </tr>
+                </thead>
+                @foreach (var practiceType in module.GroupBy(d => d.PracticeType))
+            {
+                @if (practiceType.Key != null)
+                {
+                    <thead>
+                        <tr>
+                            <th colspan="2">
+                                @practiceType.Key.PracticeTypeName
+                            </th>
+                        </tr>
+                    </thead>
+                }
+                <tbody>
+                    @foreach (var disc in practiceType.OrderBy(d => d.Id))
+                    {
+                        <tr>
+                            <td>
+                                @disc.DisciplineName
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#discModal" onclick="setDiscForm(@disc.Id, @disc.ModuleId, '@disc.DisciplineName', @disc.Semester)">Редактировать</button>
+                                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteConfirmation" onclick="setRecordForDeletion('Discipline', @disc.Id)">Удалить</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
             }
-        </tbody>
-    </table>
-</div>
+        }
+    }
+</table>

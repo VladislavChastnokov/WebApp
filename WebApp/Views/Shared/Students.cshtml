@@ -1,0 +1,49 @@
+﻿@model IEnumerable<WebApp.Models.Student>
+
+<table class="table table-sm table-primary w-100 align-middle caption-top">
+    <caption>
+        <span class="h5 text-black">Студенты</span>
+        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#studentModal" onclick="setStudentForm(-1, @ViewBag.SpecialityId, '', '', '', 0)">Добавить</button>
+        @if (ViewBag.StudentError != null)
+        {
+            <span class="h5 text-danger">@ViewBag.StudentError</span>
+            ViewBag.StudentError = null;
+        }
+    </caption>
+    <thead>
+        <tr>
+            <th>
+                Фамилия
+            </th>
+            <th>
+                Имя
+            </th>
+            <th>
+                Отчество
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+        @foreach (var kurs in Model.GroupBy(s => s.Kurs).OrderBy(k => k.Key))
+        {
+            <thead>
+                <tr>
+                    <th colspan="4">@string.Format("{0} курс", kurs.Key)</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var student in kurs)
+            {
+                <tr>
+                    <td>@student.LastName</td>
+                    <td>@student.FirstName</td>
+                    <td>@student.MiddleName</td>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#studentModal" onclick="setStudentForm(@student.Id, @student.SpecialityId, '@student.LastName', '@student.FirstName', '@student.MiddleName', @student.Kurs)">Редактировать</button>
+                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteConfirmation" onclick="setRecordForDeletion('Student', @student.Id)">Удалить</button>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        }
+</table>

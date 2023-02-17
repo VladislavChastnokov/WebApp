@@ -1,0 +1,121 @@
+﻿@model IEnumerable<WebApp.Models.Examination>
+
+@{
+    await Html.RenderPartialAsync("SelectForm", ViewBag.selectFormData, ViewData);
+
+}
+@if (Model != null)
+{
+    <div class="container bg-light mt-2">
+        <p class="text-center h4 mb-4">@ViewBag.Institution</p>
+        <p class="text-center h5">Отчет<br />по @string.Format("{0} практике по профессиональным модулям:", Model.All(x => x.Discipline.PracticeType == null) ? "преддипломной" : string.Format("{0}{1}{2}", Model.Any(x=> x.Discipline.PracticeTypeId==1) ? "учебной" : "", Model.Any(x=> x.Discipline.PracticeTypeId==1) && Model.Any(x=> x.Discipline.PracticeTypeId==2) ? " и " : "", Model.Any(x=> x.Discipline.PracticeTypeId==2) ? "производственной " : ""))</p>
+        <p class="text-justify">
+            @foreach (var module in Model.Select(x => x.Discipline.Module).Distinct().OrderBy(x=> x.Id))
+            {
+                    @Html.Raw(string.Format("{0}. {1}<br/>", module.ModuleCode, module.ModuleName));
+            }
+            <strong>@string.Format("Курс: {0}", ViewBag.Kurs)</strong><br/>
+            @if (ViewBag.Kurs > 2)
+            {
+                    <strong>@string.Format("Семестр: {0}", ViewBag.Semester)</strong>
+                    <br />
+            }
+            <strong>@string.Format("Специальность: {0}", ViewBag.Speciality)</strong>
+        </p>
+        @{
+            int k = 1;
+        }
+        @foreach (var module in Model.GroupBy(x=> x.Discipline.Module))
+        {
+            @foreach (var practiceType in module.GroupBy(x=>x.Discipline.PracticeTypeId).OrderBy(x=>x.Key))
+            {
+                @if(practiceType.Key == null)
+                {
+                    <p class="h5 text-justify">@string.Format("{0} {1}.", k, module.Key.ModuleCode, module.Key.ModuleName)</p>
+                }
+                else
+                {
+                    <p class="h5 text-justify">@string.Format(@"{0}. Виды и объем работ, оценка за выполненные обучающимся работы во время {1} практики по {2} {3}", 
+                    k, practiceType.Key switch { 1 => "учебной", 2 => "производственной", _ => "" }, module.Key.ModuleCode, module.Key.ModuleName)
+                    </p>
+                }
+                <table class="table table-sm table-light table-bordered w-auto align-middle">
+                    <thead>
+                        <tr>
+                            <th>
+                            </th>
+                                @foreach (var student in Model.Select(x=> x.Student).Distinct().OrderBy(s => s.Id))
+                                {
+                                    <th>
+                                        @string.Format("{0} {1} {2}", student.LastName, student.FirstName, student.MiddleName)
+                                    </th>
+                                }
+                            <th>
+                                <!--Добавление студента-->
+                            </th>
+                            <th>
+                                
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var disc in practiceType.GroupBy(x=>x.Discipline).OrderBy(x=>x.Key.Id))
+                        {
+                            <tr>
+                                <td><strong>@disc.Key.DisciplineName</strong></td>
+                                @foreach (var mark in disc.OrderBy(x=>x.StudentId))
+                                {
+                                    <td id="@string.Format("ex{0}",mark.Id)">
+                                        <div id="@string.Format("edit{0}",mark.Id)" style="display : none;">
+                                            <select asp-items="ViewBag.Marks">
+                                                <option value="" selected></option>
+                                            </select>
+                                            <button type="button" class="btn btn-sm btn-link m-0 p-0" onclick="endEdit(@mark.Id,true)"><img class="img-fluid" src="/images/save.png" /></button>
+                                            <button type="button" class="btn btn-sm btn-link m-0 p-0" onclick="endEdit(@mark.Id,false)"><img class="img-fluid" src="/images/del.jpg" /></button>
+                                        </div>
+                                        <div id="@string.Format("display{0}",mark.Id)" class="cursor-pointer w-100 h-100 d-block p-1" onclick="beginEdit(@mark.Id)">@mark.Mark</div>
+                                    </td>
+                                }
+                                <td></td>
+                                    @{
+                                        var avg = disc.Average(d=>d.Mark);
+                                        if(avg.HasValue)
+                                        {
+                                        <td id="@string.Format("avgD{0}", disc.Key.Id)" class="p-1">@Math.Round(avg.Value)</td>
+                                    }
+                                    else
+                                    {
+                                        <td id="@string.Format("avgD{0}", disc.Key.Id)"></td>
+                                    }
+                                }
+                            </tr>
+                        }
+                        <tr>
+                            <td>
+
+                            </td>
+                            @foreach (var avg in practiceType.GroupBy(x=>x.Student).OrderBy(x=>x.Key.Id))
+                            {
+                                    
+                                        var a = avg.Average(d => d.Mark);
+                                        if(a.HasValue)
+                                        {
+                                        <td id="@string.Format("avgS{0}-avgDM{1}-avgPr{2}", avg.Key.Id, module.Key.Id, practiceType.Key ?? 0)" class="p-1">
+                                            @Math.Round(a.Value)
+                                        </td>
+                                }
+                                else
+                                {
+                                    <td id="@string.Format("avgS{0}-avgDM{1}-avgPr{2}", avg.Key.Id, module.Key.Id, practiceType.Key ?? 0)"></td>
+                                }
+                            }
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+                k++;
+            }
+        }
+    </div>
+}

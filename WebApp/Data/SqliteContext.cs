@@ -42,9 +42,7 @@ public partial class SqliteContext : DbContext
         {
             entity.HasOne(d => d.Module).WithMany(p => p.Disciplines).HasForeignKey(d => d.ModuleId);
 
-            entity.HasOne(d => d.PracticeType).WithMany(p => p.Disciplines)
-                .HasForeignKey(d => d.PracticeTypeId)
-                .OnDelete(DeleteBehavior.ClientSetNull);
+            entity.HasOne(d => d.PracticeType).WithMany(p => p.Disciplines).HasForeignKey(d => d.PracticeTypeId);
 
             entity.HasOne(d => d.SemesterNavigation).WithMany(p => p.Disciplines)
                 .HasForeignKey(d => d.Semester)

@@ -1,0 +1,32 @@
+﻿@model IEnumerable<WebApp.Models.Institution>
+<div class="container mt-3 p-1 border-1 menu">
+    <form action="@Url.Action("", ViewData["Controller"]?.ToString())">
+        <div class="row mb-2">
+            <div class="col">
+                <label class="form-label text-white" for="instSelect">Учебное заведение</label>
+                <select id="instSelect" class="form-select" name="inst" asp-items="@(new SelectList(Model.OrderBy(m=>m.Id), "Id", "InstitutionName"))" onchange="selectChanged('specSelect', 'Specialities', this.value)">
+                    <option value="" selected></option>
+                </select>
+            </div>
+            <div class="col">
+                <label class="form-label text-white" for="specSelect">Направление/специальность</label>
+                <select id="specSelect" class="form-select" name="spec" onchange="selectChanged('semSelect', 'Semesters', this.value)" required>
+                    <option value="" selected></option>
+                </select>
+            </div>
+            <div class="col">
+                <label class="form-label text-white" for="semSelect">Семестр</label>
+                <select id="semSelect" class="form-select" name="sem" required>
+                    <option value="" selected></option>
+                </select>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col">
+                <button type="submit" class="btn btn-primary btn-block">@ViewBag.ButtonName</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+

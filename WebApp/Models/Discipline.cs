@@ -13,13 +13,13 @@ public partial class Discipline
 
     public int Semester { get; set; }
 
-    public int PracticeTypeId { get; set; }
+    public int? PracticeTypeId { get; set; }
 
     public virtual ICollection<Examination> Examinations { get; } = new List<Examination>();
 
     public virtual DisciplineModule Module { get; set; } = null!;
 
-    public virtual PracticeType PracticeType { get; set; } = null!;
+    public virtual PracticeType? PracticeType { get; set; } = null!;
 
     public virtual Semester SemesterNavigation { get; set; } = null!;
 }

@@ -44,7 +44,7 @@
                     <td>
                         @if (user.RoleId == 2)
                         {
-                            <table class="table table-sm table-borderless p-0 m-0">
+                            <table class="table table-sm table-borderless p-0 m-0 align-middle w-auto">
                                 @foreach (InstitutionAssignment assignment in user.InstitutionAssignments.OrderBy(x => x.Id))
                                 {
                                     <tr>
