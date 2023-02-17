@@ -73,5 +73,17 @@ namespace WebApp.Controllers
             else
                 throw new ArgumentNullException();
         }
+
+        public async Task<bool> CheckMarkInput(object value)
+        {
+            try
+            {
+                return await _context.Marks.FindAsync(value) != null;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }

@@ -61,33 +61,25 @@
                     <tbody>
                         @foreach (var disc in practiceType.GroupBy(x=>x.Discipline).OrderBy(x=>x.Key.Id))
                         {
+                            var a = practiceType.Average(m => m.Mark);
                             <tr>
                                 <td><strong>@disc.Key.DisciplineName</strong></td>
                                 @foreach (var mark in disc.OrderBy(x=>x.StudentId))
                                 {
                                     <td id="@string.Format("ex{0}",mark.Id)">
                                         <div id="@string.Format("edit{0}",mark.Id)" style="display : none;">
-                                            <select asp-items="ViewBag.Marks">
+                                            <input class="form-control m-0 p-0 input-sm" size="1" value="@mark.Id" onblur="endEdit(@mark.Id,true)"/>
+                                            <!--<select class="form-select" asp-items="ViewBag.Marks" onchange="endEdit(@mark.Id,true)">
                                                 <option value="" selected></option>
                                             </select>
                                             <button type="button" class="btn btn-sm btn-link m-0 p-0" onclick="endEdit(@mark.Id,true)"><img class="img-fluid" src="/images/save.png" /></button>
-                                            <button type="button" class="btn btn-sm btn-link m-0 p-0" onclick="endEdit(@mark.Id,false)"><img class="img-fluid" src="/images/del.jpg" /></button>
+                                            <button type="button" class="btn btn-sm btn-link m-0 p-0" onclick="endEdit(@mark.Id,false)"><img class="img-fluid" src="/images/del.jpg" /></button>-->
                                         </div>
-                                        <div id="@string.Format("display{0}",mark.Id)" class="cursor-pointer w-100 h-100 d-block p-1" onclick="beginEdit(@mark.Id)">@mark.Mark</div>
+                                        <div id="@string.Format("label{0}",mark.Id)" class="cursor-pointer w-100 h-100 p-1" ondblclick="beginEdit(@mark.Id)">@mark.Mark</div>
                                     </td>
                                 }
                                 <td></td>
-                                    @{
-                                        var avg = disc.Average(d=>d.Mark);
-                                        if(avg.HasValue)
-                                        {
-                                        <td id="@string.Format("avgD{0}", disc.Key.Id)" class="p-1">@Math.Round(avg.Value)</td>
-                                    }
-                                    else
-                                    {
-                                        <td id="@string.Format("avgD{0}", disc.Key.Id)"></td>
-                                    }
-                                }
+                                <td><div id="@string.Format("avgD{0}", disc.Key.Id)" class="p-1">@string.Format("{0}", a.HasValue && a.Value>0 ? Math.Round(a.Value) : "")</div></td>
                             </tr>
                         }
                         <tr>
@@ -96,18 +88,8 @@
                             </td>
                             @foreach (var avg in practiceType.GroupBy(x=>x.Student).OrderBy(x=>x.Key.Id))
                             {
-                                    
-                                        var a = avg.Average(d => d.Mark);
-                                        if(a.HasValue)
-                                        {
-                                        <td id="@string.Format("avgS{0}-avgDM{1}-avgPr{2}", avg.Key.Id, module.Key.Id, practiceType.Key ?? 0)" class="p-1">
-                                            @Math.Round(a.Value)
-                                        </td>
-                                }
-                                else
-                                {
-                                    <td id="@string.Format("avgS{0}-avgDM{1}-avgPr{2}", avg.Key.Id, module.Key.Id, practiceType.Key ?? 0)"></td>
-                                }
+                                var a = avg.Average(d => d.Mark);
+                                <td><div id="@string.Format("avgS{0}-avgDM{1}-avgPr{2}", avg.Key.Id, module.Key.Id, practiceType.Key ?? 0)" class="p-1">@string.Format("{0}", a.HasValue && a.Value > 0 ? Math.Round(a.Value) : "")</div></td>
                             }
                             <td></td>
                             <td></td>

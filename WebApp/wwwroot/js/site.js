@@ -134,28 +134,47 @@ function selectChanged(target, action, value) {
 }
 
 function beginEdit(id) {
-    $("#edit" + id + " > select").val($("#display" + id).text()).change();
-    $("#display" + id).hide();
+    $("#edit" + id + " > input").val($("#label" + id).text());
+    $("#label" + id).hide();
     $("#edit" + id).show();
+    $("#edit" + id + " > input").focus();
 }
 
 function endEdit(id, save) {
     if (save) {
-        $.ajax({
-            type: "POST",
-            url: "/Examination/SaveMark",
-            data: { Id: id, Mark: $("#edit" + id + " > select").val() },
-            success: function (data) {
-                $("#display" + id).text($("#edit" + id + " > select").val());
-                $("#avgD" + data.disc).text(data.avgD);
-                $("#avgS" + data.id + "-avgDM" + data.dm + "-avgPr" + data.pr).text(data.avgS);
-            },
-            fail: function () {
-                alert('Ошибка!');
-            }
-        });
-
+        if ((!isNaN($("#edit" + id + " > input").val()) && checkMarkInput($("#edit" + id + " > input").val())) || $("#edit" + id + " > input").val() == null) {
+            $.ajax({
+                type: "POST",
+                url: "/Examination/SaveMark",
+                data: { Id: id, Mark: $("#edit" + id + " > input").val() },
+                success: function (data) {
+                    $("#label" + id).text($("#edit" + id + " > input").val());
+                    $("#avgD" + data.disc).text(Math.round(data.avgD));
+                    $("#avgS" + data.id + "-avgDM" + data.dm + "-avgPr" + data.pr).text(Math.round(data.avgS));
+                },
+                fail: function () {
+                    alert('Ошибка!');
+                }
+            });
+        }
+        else {
+            alert('Введенное значение не является допустимым!');
+            $("#edit" + id + " > input").val('');
+        }
     }
-    $("#display" + id).show();
+    $("#label" + id).show();
     $("#edit" + id).hide();
+}
+
+function checkMarkInput(x) {
+    var result = false;
+    $.ajax({
+        type: "POST",
+        url: "/Examination/CheckMarkInput",
+        data: { value: x },
+        success: function (data) {
+            result = data;
+        }
+    });
+    return result;
 }
