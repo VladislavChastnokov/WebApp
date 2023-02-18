@@ -69,11 +69,6 @@
                                     <td id="@string.Format("ex{0}",mark.Id)">
                                         <div id="@string.Format("edit{0}",mark.Id)" style="display : none;">
                                             <input class="form-control m-0 p-0 input-sm" size="1" value="@mark.Id" onblur="endEdit(@mark.Id,true)"/>
-                                            <!--<select class="form-select" asp-items="ViewBag.Marks" onchange="endEdit(@mark.Id,true)">
-                                                <option value="" selected></option>
-                                            </select>
-                                            <button type="button" class="btn btn-sm btn-link m-0 p-0" onclick="endEdit(@mark.Id,true)"><img class="img-fluid" src="/images/save.png" /></button>
-                                            <button type="button" class="btn btn-sm btn-link m-0 p-0" onclick="endEdit(@mark.Id,false)"><img class="img-fluid" src="/images/del.jpg" /></button>-->
                                         </div>
                                         <div id="@string.Format("label{0}",mark.Id)" class="cursor-pointer w-100 h-100 p-1" ondblclick="beginEdit(@mark.Id)">@mark.Mark</div>
                                     </td>
