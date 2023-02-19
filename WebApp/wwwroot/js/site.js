@@ -142,15 +142,26 @@ function beginEdit(id) {
 
 function endEdit(id, save) {
     if (save) {
-        if ((!isNaN($("#edit" + id + " > input").val()) && checkMarkInput($("#edit" + id + " > input").val())) || $("#edit" + id + " > input").val() == null) {
+        if (!isNaN($("#edit" + id + " > input").val()) || $("#edit" + id + " > input").val() == null) {
             $.ajax({
                 type: "POST",
                 url: "/Examination/SaveMark",
                 data: { Id: id, Mark: $("#edit" + id + " > input").val() },
                 success: function (data) {
                     $("#label" + id).text($("#edit" + id + " > input").val());
-                    $("#avgD" + data.disc).text(Math.round(data.avgD));
-                    $("#avgS" + data.id + "-avgDM" + data.dm + "-avgPr" + data.pr).text(Math.round(data.avgS));
+                    if (data.avgD > 0) {
+                        $("#avgD" + data.disc).text(Math.round(data.avgD));
+                    }
+                    else {
+                        $("#avgD" + data.disc).text("");
+                    }
+                    if (data.avgS > 0) {
+                        $("#avgS" + data.id + "-avgDM" + data.dm + "-avgPr" + data.pr).text(Math.round(data.avgS));
+                    }
+                    else {
+                        $("#avgS" + data.id + "-avgDM" + data.dm + "-avgPr" + data.pr).text("");
+                    }
+                    
                 },
                 fail: function () {
                     alert('Ошибка!');
@@ -164,17 +175,4 @@ function endEdit(id, save) {
     }
     $("#label" + id).show();
     $("#edit" + id).hide();
-}
-
-function checkMarkInput(x) {
-    var result = false;
-    $.ajax({
-        type: "POST",
-        url: "/Examination/CheckMarkInput",
-        data: { value: x },
-        success: function (data) {
-            result = data;
-        }
-    });
-    return result;
 }

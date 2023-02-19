@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using System.Drawing;
 using WebApp.Data;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using WebApp.Models;
 
 namespace WebApp.Controllers
@@ -33,6 +35,7 @@ namespace WebApp.Controllers
                 ViewBag.Institution = intstitution?.InstitutionName;
                 var speciality = await _context.Specialities.FindAsync(spec);
                 ViewBag.Speciality = string.Format("{0} {1}", speciality?.SpecialityCode, speciality?.SpecialityName);
+                ViewBag.SpecialityId = speciality?.Id;
                 var semester = await _context.Semesters.FindAsync(sem);
                 ViewBag.Semester = semester?.Id == 7 ? "8" : semester?.Caption;
                 ViewBag.Kurs = semester?.Kurs;
@@ -47,21 +50,30 @@ namespace WebApp.Controllers
             return View();
         }
 
-        public async Task<object> Specialities(int Id)
+        public async Task<object?> Specialities(int Id)
         {
+            var access = Helper.ShowPage(HttpContext.Session, pageName, out string redirect);
+            if (!access)
+                return null;
             var list = await _context.Specialities.Where(s => s.InstitutionId == Id).Select(s => new { s.Id, Name = string.Format("{0} {1}", s.SpecialityCode, s.SpecialityName) }).ToListAsync();
             return list;
         }
 
-        public async Task<object> Semesters(int Id)
+        public async Task<object?> Semesters(int Id)
         {
+            var access = Helper.ShowPage(HttpContext.Session, pageName, out string redirect);
+            if (!access)
+                return null;
             var list = await _context.Disciplines.Include(d => d.SemesterNavigation).Include(d => d.Module).Where(d => d.Module.SpecialityId == Id).Select(d => new { d.SemesterNavigation.Id, Name = d.SemesterNavigation.Caption }).Distinct().ToListAsync();
             return list;
         }
 
         [HttpPost]
-        public async Task<object> SaveMark(int id, int? Mark)
+        public async Task<object?> SaveMark(int id, int? Mark)
         {
+            var access = Helper.ShowPage(HttpContext.Session, pageName, out string redirect);
+            if (!access)
+                return null;
             var mark = await _context.Examinations.Include(m => m.Discipline).Where(e => e.Id == id).FirstOrDefaultAsync();
             if (mark != null)
             {
@@ -74,8 +86,12 @@ namespace WebApp.Controllers
                 throw new ArgumentNullException();
         }
 
-        public async Task<bool> CheckMarkInput(object value)
+        [HttpPost]
+        public async Task<bool> CheckMarkInput(int? value)
         {
+            var access = Helper.ShowPage(HttpContext.Session, pageName, out string redirect);
+            if (!access)
+                return false;
             try
             {
                 return await _context.Marks.FindAsync(value) != null;
@@ -84,6 +100,29 @@ namespace WebApp.Controllers
             {
                 return false;
             }
+        }
+
+        [HttpPost]
+        public async Task<object?> AddStudent(string lastName, string firstName, string? middleName, int spec, int kurs)
+        {
+            try
+            {
+                var access = Helper.ShowPage(HttpContext.Session, pageName, out string redirect);
+                if (!access)
+                    return null;
+                var newStudent = new Student() { SpecialityId = spec, LastName = lastName, FirstName = firstName, MiddleName = middleName, Kurs = kurs };
+                var disc = await _context.Disciplines.Include(d => d.Module).Where(d => d.Module.SpecialityId == spec).ToListAsync();
+                foreach (var d in disc)
+                {
+                    newStudent.Examinations.Add(new Models.Examination() { Discipline = d });
+                }
+                return new { id = newStudent.Id, fio = string.Format("{0} {1} {2}", newStudent.LastName, newStudent.FirstName, newStudent.MiddleName), exams = newStudent.Examinations.OrderBy(x=>x.DisciplineId).Select(x=> new { x.Id, x.DisciplineId }).ToList() };
+            }
+            catch(Exception ex)
+            {
+                return null;
+            }
+            
         }
     }
 }

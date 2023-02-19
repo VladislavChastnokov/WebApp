@@ -39,60 +39,47 @@
                     k, practiceType.Key switch { 1 => "учебной", 2 => "производственной", _ => "" }, module.Key.ModuleCode, module.Key.ModuleName)
                     </p>
                 }
-                <table class="table table-sm table-light table-bordered w-auto align-middle">
-                    <thead>
-                        <tr>
-                            <th>
-                            </th>
-                                @foreach (var student in Model.Select(x=> x.Student).Distinct().OrderBy(s => s.Id))
-                                {
-                                    <th>
-                                        @string.Format("{0} {1} {2}", student.LastName, student.FirstName, student.MiddleName)
-                                    </th>
-                                }
-                            <th>
-                                <!--Добавление студента-->
-                            </th>
-                            <th>
-                                
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var disc in practiceType.GroupBy(x=>x.Discipline).OrderBy(x=>x.Key.Id))
-                        {
-                            var a = practiceType.Average(m => m.Mark);
-                            <tr>
-                                <td><strong>@disc.Key.DisciplineName</strong></td>
-                                @foreach (var mark in disc.OrderBy(x=>x.StudentId))
-                                {
-                                    <td id="@string.Format("ex{0}",mark.Id)">
-                                        <div id="@string.Format("edit{0}",mark.Id)" style="display : none;">
-                                            <input class="form-control m-0 p-0 input-sm" size="1" value="@mark.Id" onblur="endEdit(@mark.Id,true)"/>
-                                        </div>
-                                        <div id="@string.Format("label{0}",mark.Id)" class="cursor-pointer w-100 h-100 p-1" ondblclick="beginEdit(@mark.Id)">@mark.Mark</div>
-                                    </td>
-                                }
-                                <td></td>
-                                <td><div id="@string.Format("avgD{0}", disc.Key.Id)" class="p-1">@string.Format("{0}", a.HasValue && a.Value>0 ? Math.Round(a.Value) : "")</div></td>
-                            </tr>
-                        }
-                        <tr>
-                            <td>
-
-                            </td>
-                            @foreach (var avg in practiceType.GroupBy(x=>x.Student).OrderBy(x=>x.Key.Id))
-                            {
-                                var a = avg.Average(d => d.Mark);
-                                <td><div id="@string.Format("avgS{0}-avgDM{1}-avgPr{2}", avg.Key.Id, module.Key.Id, practiceType.Key ?? 0)" class="p-1">@string.Format("{0}", a.HasValue && a.Value > 0 ? Math.Round(a.Value) : "")</div></td>
-                            }
-                            <td></td>
-                            <td></td>
-                        </tr>
-                    </tbody>
-                </table>
+                ViewBag.Module = module.Key.Id;
+                await Html.RenderPartialAsync("Examination", practiceType, ViewData);
                 k++;
             }
         }
+    </div>
+
+    <div class="modal fade" id="studentModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="javascript:void(0);" onsubmit="addStudent()">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Студент</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input id="studSpec" name="spec" type="hidden" value="" required />
+                        <div class="form-group">
+                            <label class="form-label">Фамилия</label>
+                            <input type="text" id="lastName" name="lastName" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Имя</label>
+                            <input type="text" id="firstName" name="firstName" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Отчество</label>
+                            <input type="text" id="middleName" name="middleName" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <input id="kurs" name="kurs" type="hidden" value="" required />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button id="studentModalSubmit" type="submit" class="btn btn-primary"></button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 }
