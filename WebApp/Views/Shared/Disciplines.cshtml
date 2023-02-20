@@ -3,7 +3,7 @@
     <table class="table table-sm table-primary w-auto align-middle caption-top">
         <caption>
             <span class="h5 text-black">Дисциплины</span>
-            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#discModal" onclick="setDiscForm(-1, '', '', '')">Добавить</button>
+            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#discModal" onclick="readyDiscForm(-1, '', '', '')">Добавить</button>
             @if (ViewBag.DiscError != null)
             {
                 <span class="h5 text-danger">@ViewBag.DiscError</span>
@@ -48,7 +48,7 @@
                                 @disc.DisciplineName
                             </td>
                             <td>
-                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#discModal" onclick="setDiscForm(@disc.Id, @disc.ModuleId, '@disc.DisciplineName', @disc.Semester)">Редактировать</button>
+                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#discModal" onclick="readyDiscForm(@disc.Id, @disc.ModuleId, '@disc.DisciplineName', @disc.Semester)">Редактировать</button>
                                 <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteConfirmation" onclick="setRecordForDeletion('Discipline', @disc.Id)">Удалить</button>
                             </td>
                         </tr>

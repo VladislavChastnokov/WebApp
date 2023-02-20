@@ -65,7 +65,7 @@
                         }
                     </td>
                     <td>
-                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#changePassword" onclick="setId('#userIdField', @user.Id)">Изменить пароль</button>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#changePassword" onclick="setId(@user.Id)">Изменить пароль</button>
                         <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteConfirmation" onclick="setRecordForDeletion('User', @user.Id)">Удалить</button>
                     </td>
                 </tr>

@@ -3,7 +3,7 @@
     <table class="table table-sm table-primary w-100 align-middle caption-top">
         <caption>
             <span class="h5 text-black">Модули</span>
-            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#moduleModal" onclick="setModuleForm(-1, @ViewBag.SpecialityId, '', '')">Добавить</button>
+            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#moduleModal" onclick="readyModuleForm(-1, @ViewBag.SpecialityId, '', '')">Добавить</button>
             @if (ViewBag.ModuleError != null)
             {
                 <span class="h5 text-danger">@ViewBag.ModuleError</span>
@@ -24,7 +24,7 @@
                     <td>@module.ModuleCode</td>
                     <td>@module.ModuleName</td>
                     <td>
-                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#moduleModal" onclick="setModuleForm(@module.Id, @module.SpecialityId, '@module.ModuleCode', '@module.ModuleName')">Редактировать</button>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#moduleModal" onclick="readyModuleForm(@module.Id, @module.SpecialityId, '@module.ModuleCode', '@module.ModuleName')">Редактировать</button>
                         <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteConfirmation" onclick="setRecordForDeletion('DisciplineModule', @module.Id)">Удалить</button>
                     </td>
                 </tr>

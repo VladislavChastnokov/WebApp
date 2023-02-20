@@ -2,7 +2,6 @@
 
 @{
     await Html.RenderPartialAsync("SelectForm", ViewBag.selectFormData, ViewData);
-
 }
 @if (Model != null)
 {
@@ -76,7 +75,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                        <button id="studentModalSubmit" type="submit" class="btn btn-primary"></button>
+                        <button id="studentModalSubmit" type="submit" data-bs-dismiss="modal" class="btn btn-primary">Добавить</button>
                     </div>
                 </form>
             </div>

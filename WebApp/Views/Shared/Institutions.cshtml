@@ -3,7 +3,7 @@
     <table class="table table-sm table-primary w-auto align-middle caption-top">
         <caption>
             <span class="h5 text-black">Учебные заведения</span>
-            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#instModal" onclick="readyForm('', -1)">Добавить</button>
+            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#instModal" onclick="readyInstForm('', -1)">Добавить</button>
             @if (ViewBag.InstitutionErrorMessage != null)
             {
                 <span class="h5 text-danger">@ViewBag.InstitutionErrorMessage</span>

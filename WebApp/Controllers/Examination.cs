@@ -110,13 +110,20 @@ namespace WebApp.Controllers
                 var access = Helper.ShowPage(HttpContext.Session, pageName, out string redirect);
                 if (!access)
                     return null;
-                var newStudent = new Student() { SpecialityId = spec, LastName = lastName, FirstName = firstName, MiddleName = middleName, Kurs = kurs };
-                var disc = await _context.Disciplines.Include(d => d.Module).Where(d => d.Module.SpecialityId == spec).ToListAsync();
-                foreach (var d in disc)
+                if (await _context.Students.FirstOrDefaultAsync(s => s.SpecialityId.Equals(spec) && s.LastName.Equals(lastName) && s.FirstName.Equals(firstName) && ((string.IsNullOrEmpty(s.MiddleName) && string.IsNullOrEmpty(middleName)) || s.MiddleName.Equals(middleName)) && (s.Kurs.Equals(kurs))) == null)
                 {
-                    newStudent.Examinations.Add(new Models.Examination() { Discipline = d });
+                    var newStudent = new Student() { SpecialityId = spec, LastName = lastName, FirstName = firstName, MiddleName = middleName, Kurs = kurs };
+                    var disc = await _context.Disciplines.Include(d => d.Module).Where(d => d.Module.SpecialityId == spec).ToListAsync();
+                    foreach (var d in disc)
+                    {
+                        newStudent.Examinations.Add(new Models.Examination() { Discipline = d });
+                    }
+                    await _context.Students.AddAsync(newStudent);
+                    await _context.SaveChangesAsync();
+                    return new { id = newStudent.Id, fio = string.Format("{0} {1} {2}", newStudent.LastName, newStudent.FirstName, newStudent.MiddleName), exams = newStudent.Examinations.OrderBy(x => x.DisciplineId).Select(x => new { x.Id, DisciplineId = x.Discipline.Id, x.Discipline.ModuleId, PracticeTypeId = x.Discipline.PracticeTypeId ?? 0 }).ToList() };
                 }
-                return new { id = newStudent.Id, fio = string.Format("{0} {1} {2}", newStudent.LastName, newStudent.FirstName, newStudent.MiddleName), exams = newStudent.Examinations.OrderBy(x=>x.DisciplineId).Select(x=> new { x.Id, x.DisciplineId }).ToList() };
+                else
+                    return null;
             }
             catch(Exception ex)
             {

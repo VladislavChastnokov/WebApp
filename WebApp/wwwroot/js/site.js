@@ -1,8 +1,5 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
-
-// Write your JavaScript code.
-function readyForm(name, id) {
+﻿//форма добавления/редактирования учебных заведений
+function readyInstForm(name, id) {
     $("#instId").val(id);
     $("#instName").val(name);
     if (id != -1) {
@@ -12,7 +9,7 @@ function readyForm(name, id) {
         $("#instModalSubmit").text("Добавить");
     }
 }
-
+//форма добавления/редактирования направлений/специальностей
 function readySpecForm(name, code, id, instId) {
     $("#specId").val(id);
     $("#specInstId").val(instId);
@@ -25,22 +22,17 @@ function readySpecForm(name, code, id, instId) {
         $("#specModalSubmit").text("Добавить");
     }
 }
-
-function deleteConfirmation(type, id) {
-    $("#recordId").val(id);
-    $("#recordType").val(type);
+//форма смены пароля
+function setId(id) {
+    $("#userIdField").val(id);
 }
-
-function setId(field, x) {
-    $(field).val(x);
-}
-
+//форма удаления записи
 function setRecordForDeletion(type, id) {
     $("#recordType").val(type);
     $("#recordId").val(id);
 }
-
-function setModuleForm(id, spec, code, name) {
+//форма добавления/редактирования модулей дисциплин
+function readyModuleForm(id, spec, code, name) {
     $("#moduleId").val(id);
     $("#specId").val(spec);
     $("#moduleCode").val(code);
@@ -52,8 +44,8 @@ function setModuleForm(id, spec, code, name) {
         $("#moduleModalSubmit").text("Добавить");
     }
 }
-
-function setDiscForm(id, module, name, sem) {
+//форма добавления/редактирования дисциплин
+function readyDiscForm(id, module, name, sem) {
     $("#discId").val(id);
     $("#mId").val(module);
     $("#discName").val(name);
@@ -73,7 +65,7 @@ function setDiscForm(id, module, name, sem) {
         $("#discModalSubmit").text("Добавить");
     }
 }
-
+//изменение выбранного семестра на форме добавления/редактирования дисциплин
 function semSelectChanged(v) {
     if (v == 7) {
         $("#practiceSelect").hide();
@@ -88,7 +80,7 @@ function semSelectChanged(v) {
         $("#workPractice").attr("required", true);
     }
 }
-
+//отметка видов практики на форме добавления/редактирования дисциплин
 function checkBoxClick(x) {
     if (x.checked) {
         $("#studyPractice").removeAttr("required");
@@ -101,8 +93,8 @@ function checkBoxClick(x) {
         }
     }
 }
-
-function setStudentForm(id, spec, lastName, firstName, middleName, kurs) {
+//форма добавления/редактирования студентов
+function readyStudentForm(id, spec, lastName, firstName, middleName, kurs) {
     $("#studId").val(id);
     $("#studSpec").val(spec);
     $("#lastName").val(lastName);
@@ -175,4 +167,30 @@ function endEdit(id, save) {
     }
     $("#label" + id).show();
     $("#edit" + id).hide();
+}
+
+function addStudent() {
+    $.ajax({
+        type: "POST",
+        url: "/Examination/AddStudent",
+        data: { lastName: $("#lastName").val(), firstName: $("#firstName").val(), middleName: $("#middleName").val(), kurs: $("#kurs").val(), spec: $("#studSpec").val() },
+        success: function (data) {
+            if (data != null) {
+                //добавление столбца с ФИО студента во все таблицы
+                $("table").each(function () {
+                    $("<th>" + data.fio + "</th>").insertBefore($("#" + this.id + " > thead > tr > th.last"));
+                })
+                data.exams.forEach(ex => {
+                    //добавление ячейки среднего балла по студенту
+                    if ($("#avgS" + data.id + "-avgDM" + ex.moduleId + "-avgPr" + ex.practiceTypeId).length == 0) {
+                        $("<td><div id=\"avgS" + data.id + "-avgDM" + ex.moduleId + "-avgPr" + ex.practiceTypeId + "\" class=\"p-1\"></div></td>").insertBefore($("#DM" + ex.moduleId + "-Pr" + ex.practiceTypeId + " > tfoot > tr > td.last"));
+                    }
+                    $("<td id=\"ex" + ex.id + "\"><div id=\"edit" + ex.id + "\" style=\"display : none;\"><input type=\"number\" min=\"2\" max=\"5\" class=\"form-control m-0 p-0 input-sm\" size=\"1\" value=\"\" onblur=\"endEdit(" + ex.id + ",true)\"/></div><div id=\"label" + ex.id + "\" class=\"cursor-pointer w-100 h-100 p-1\" ondblclick=\"beginEdit(" + ex.id + ")\"></div></td>").insertBefore($("#DM" + ex.moduleId + "-Pr" + ex.practiceTypeId + " > tbody > tr#D" + ex.disciplineId + " > td.last"));
+                });
+            }
+        },
+        fail: function () {
+            alert('Ошибка!');
+        }
+    });
 }
