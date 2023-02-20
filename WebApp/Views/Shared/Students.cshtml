@@ -21,14 +21,14 @@
             <th>
                 Отчество
             </th>
-            <th></th>
+            <th colspan="2"></th>
         </tr>
     </thead>
         @foreach (var kurs in Model.GroupBy(s => s.Kurs).OrderBy(k => k.Key))
         {
             <thead>
                 <tr>
-                    <th colspan="4">@string.Format("{0} курс", kurs.Key)</th>
+                    <th colspan="5">@string.Format("{0} курс", kurs.Key)</th>
                 </tr>
             </thead>
             <tbody>
@@ -40,7 +40,9 @@
                     <td>@student.MiddleName</td>
                     <td>
                         <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#studentModal" onclick="readyStudentForm(@student.Id, @student.SpecialityId, '@student.LastName', '@student.FirstName', '@student.MiddleName', @student.Kurs)">Редактировать</button>
-                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteConfirmation" onclick="setRecordForDeletion('Student', @student.Id)">Удалить</button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteConfirmation" onclick="setRecordForDeletion('Student', @student.Id)"><img src="/images/trash.png" /></button>
                     </td>
                 </tr>
             }

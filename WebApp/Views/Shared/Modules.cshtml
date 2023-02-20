@@ -14,7 +14,7 @@
             <tr>
                 <th>Код</th>
                 <th>Название</th>
-                <th></th>
+                <th colspan="2"></th>
             </tr>
         </thead>
         <tbody>
@@ -25,7 +25,9 @@
                     <td>@module.ModuleName</td>
                     <td>
                         <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#moduleModal" onclick="readyModuleForm(@module.Id, @module.SpecialityId, '@module.ModuleCode', '@module.ModuleName')">Редактировать</button>
-                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteConfirmation" onclick="setRecordForDeletion('DisciplineModule', @module.Id)">Удалить</button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteConfirmation" onclick="setRecordForDeletion('DisciplineModule', @module.Id)"><img src="/images/trash.png" /></button>
                     </td>
                 </tr>
             }
