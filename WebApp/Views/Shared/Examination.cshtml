@@ -5,14 +5,17 @@
         <tr>
             <th>
             </th>
-            @foreach (var student in Model.Select(x => x.Student).Distinct().OrderBy(s => s.Id))
-            {
-                <th>
-                    @string.Format("{0} {1} {2}", student.LastName, student.FirstName, student.MiddleName)
-                </th>
-            }
+            @foreach (var student in Model.Select(x => x.Student).Distinct().Where(s => s != null).OrderBy(s => s.Id))
+                {
+                    <th>
+                        @string.Format("{0} {1} {2}", student.LastName, student.FirstName, student.MiddleName)
+                    </th>
+                }
             <th class="last">
-                <button type="button" class="btn btn-sm btn-link" data-bs-toggle="modal" data-bs-target="#studentModal" onclick="readyStudentForm(-1, @ViewBag.SpecialityId, '', '', '', @ViewBag.Kurs)"><img class="img-fluid" src="/images/add.jpg" /></button>
+                @if(Context.Session.GetInt32("userRole") == 2)
+                {
+                    <button type="button" class="btn btn-sm btn-link" data-bs-toggle="modal" data-bs-target="#studentModal" onclick="readyStudentForm(-1, @ViewBag.SpecialityId, '', '', '', @ViewBag.Kurs)"><img src="/images/add.jpg" /></button>
+                }
             </th>
             <th></th>
         </tr>
@@ -23,17 +26,21 @@
             var a = disc.Average(m => m.Mark);
             <tr id="@string.Format("D{0}", disc.Key.Id)">
                 <td><strong>@disc.Key.DisciplineName</strong></td>
-                @foreach (var mark in disc.OrderBy(x => x.StudentId))
+                @foreach (var mark in disc.Where(x => x.Student != null).OrderBy(x => x.StudentId))
                 {
                     <td id="@string.Format("ex{0}",mark.Id)">
-                    <div id="@string.Format("edit{0}",mark.Id)" style="display : none;">
-                        <input type="number" min="2" max="5" class="form-control m-0 p-0 input-sm" size="1" value="@mark.Id" onblur="endEdit(@mark.Id,true)"/>
-                    </div>
-                    <div id="@string.Format("label{0}",mark.Id)" class="cursor-pointer w-100 h-100 p-1" ondblclick="beginEdit(@mark.Id)">@mark.Mark</div>
+                        @if (Context.Session.GetInt32("userRole") == 1)
+                        {
+                            <div id="@string.Format("label{0}",@mark.Id)" class="cursor-pointer w-100 h-100 p-1">@mark.Mark</div>
+                        }
+                        else
+                        {
+                            <partial name="Mark" for="@mark"/>
+                        }
                     </td>
                 }
                 <td class="last"></td>
-                <td><div id="@string.Format("avgD{0}", disc.Key.Id)" class="p-1">@string.Format("{0}", a.HasValue && a.Value>0 ? Math.Round(a.Value) : "")</div></td>
+                <td><div id="@string.Format("avgD{0}", disc.Key.Id)" class="p-1">@string.Format("{0}", a.HasValue && a.Value > 0 ? Math.Round(a.Value) : "")</div></td>
             </tr>
         }
     </tbody>
@@ -41,7 +48,7 @@
         <tr>
             <td>
             </td>
-            @foreach (var avg in Model.GroupBy(x => x.Student).OrderBy(x => x.Key.Id))
+            @foreach (var avg in Model.GroupBy(x => x.Student).Where(x => x.Key != null).OrderBy(x => x.Key.Id))
             {
                 var a = avg.Average(d => d.Mark);
                 <td><div id="@string.Format("avgS{0}-avgDM{1}-avgPr{2}", avg.Key.Id, ViewBag.Module, Model.Key ?? 0)" class="p-1">@string.Format("{0}", a.HasValue && a.Value > 0 ? Math.Round(a.Value) : "")</div></td>

@@ -185,12 +185,33 @@ function addStudent() {
                     if ($("#avgS" + data.id + "-avgDM" + ex.moduleId + "-avgPr" + ex.practiceTypeId).length == 0) {
                         $("<td><div id=\"avgS" + data.id + "-avgDM" + ex.moduleId + "-avgPr" + ex.practiceTypeId + "\" class=\"p-1\"></div></td>").insertBefore($("#DM" + ex.moduleId + "-Pr" + ex.practiceTypeId + " > tfoot > tr > td.last"));
                     }
-                    $("<td id=\"ex" + ex.id + "\"><div id=\"edit" + ex.id + "\" style=\"display : none;\"><input type=\"number\" min=\"2\" max=\"5\" class=\"form-control m-0 p-0 input-sm\" size=\"1\" value=\"\" onblur=\"endEdit(" + ex.id + ",true)\"/></div><div id=\"label" + ex.id + "\" class=\"cursor-pointer w-100 h-100 p-1\" ondblclick=\"beginEdit(" + ex.id + ")\"></div></td>").insertBefore($("#DM" + ex.moduleId + "-Pr" + ex.practiceTypeId + " > tbody > tr#D" + ex.disciplineId + " > td.last"));
+                    //добавление ячейки с оценкой
+                    $("<td id=\"ex" + ex.id + "\"></td>").insertBefore($("#DM" + ex.moduleId + "-Pr" + ex.practiceTypeId + " > tbody > tr#D" + ex.disciplineId + " > td.last"))
+                    $.ajax({
+                        type: "GET",
+                        url: "/Examination/Mark",
+                        data: { id: ex.id },
+                        success: function (response) {
+                            $("#ex"+ex.id).html(response);
+                        }
+                    });
                 });
             }
         },
         fail: function () {
             alert('Ошибка!');
         }
+    });
+}
+
+function Export() {
+    //let wr = new TextEncoder();
+    //var data = wr.encode($("#content").html());
+    $.ajax({
+        type: "post",
+        url: "Examination/Export",
+        data: { dt: $("#content").html() },
+        success: function () { alert("!!!") },
+        fail: function () { alert("(((") }
     });
 }

@@ -7,6 +7,7 @@ using WebApp.Data;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using WebApp.Models;
+using Microsoft.Extensions.Hosting;
 
 namespace WebApp.Controllers
 {
@@ -15,10 +16,14 @@ namespace WebApp.Controllers
         private readonly string pageName = "Examination";
 
         private readonly SqliteContext _context;
+        private readonly IWebHostEnvironment _environment;
+        private readonly IConfiguration _configuration;
 
-        public Examination(SqliteContext context)
+        public Examination(SqliteContext context, IWebHostEnvironment environment, IConfiguration config)
         {
             _context = context;
+            _environment = environment;
+            _configuration = config;
         }
 
         public async Task<IActionResult> Index(int? inst, int? spec, int? sem)
@@ -38,13 +43,15 @@ namespace WebApp.Controllers
                 ViewBag.SpecialityId = speciality?.Id;
                 var semester = await _context.Semesters.FindAsync(sem);
                 ViewBag.Semester = semester?.Id == 7 ? "8" : semester?.Caption;
-                ViewBag.Kurs = semester?.Kurs;
-                ViewBag.Marks = new SelectList(_context.Marks.ToList(), "Mark1", "Mark1");
+                var kurs = semester?.Kurs;
+                ViewBag.Kurs = kurs;
                 var disciplines = await _context.Disciplines.Include(d => d.Module).Where(d => d.Module.SpecialityId == spec && d.Semester == sem).ToListAsync();
-                var modules = disciplines.Select(x => x.Module).Distinct().ToList();
-                var marks = await _context.Examinations.Include(e => e.MarkNavigation).Include(e => e.Student).Include(e => e.Discipline).ThenInclude(m => m.Module).Where(m => m.Discipline.Module.SpecialityId == spec && m.Discipline.Semester == sem && m.Student.Kurs == semester.Kurs).ToListAsync();
-                var students = marks.Select(e => e.Student).Distinct().ToList();
-                //var model = new { LDisc = disciplines, LMd = modules, LMarks = marks, LSt = students, Editable = false };
+                var marks = await _context.Examinations.Include(e => e.MarkNavigation).Include(e => e.Student).Include(e => e.Discipline).ThenInclude(m => m.Module).Where(m => m.Discipline.Module.SpecialityId == spec && m.Discipline.Semester == sem && m.Student.Kurs == kurs).ToListAsync();
+                //Если студенты не были заполнены заранее
+                if(marks.Count == 0)
+                {
+                    marks.AddRange(disciplines.Select(x => new Models.Examination() { Discipline = x }));
+                }
                 return View(marks);
             }
             return View();
@@ -89,7 +96,7 @@ namespace WebApp.Controllers
         [HttpPost]
         public async Task<bool> CheckMarkInput(int? value)
         {
-            var access = Helper.ShowPage(HttpContext.Session, pageName, out string redirect);
+            var access = Helper.ShowPage(HttpContext.Session, pageName, out _);
             if (!access)
                 return false;
             try
@@ -129,7 +136,21 @@ namespace WebApp.Controllers
             {
                 return null;
             }
+        }
+
+        public async Task<IActionResult> Mark(int id)
+        {
+            var mark = await _context.Examinations.FindAsync(id);
+            var v = PartialView(mark);
             
+            return PartialView(mark);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Export(string dt)
+        {
+
+            return File(new byte[0], "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "report.docx");
         }
     }
 }
