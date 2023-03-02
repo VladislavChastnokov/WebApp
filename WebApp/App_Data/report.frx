@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="03/01/2023 13:47:26" ReportInfo.Modified="03/01/2023 15:03:50" ReportInfo.CreatorVersion="2023.1.0.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {
+
+    private void Page1_ManualBuild(object sender, EventArgs e)
+    {
+      
+    }
+  }
+}
+</ScriptText>
+  <Dictionary/>
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" Watermark.Font="Arial, 60pt" ManualBuildEvent="Page1_ManualBuild">
+    <ReportTitleBand Name="ReportTitle1" Width="1047.06" Height="47.25">
+      <TextObject Name="Text1" Width="1047.06" Height="47.25" Dock="Fill" Text="[Table.Institution]" HorzAlign="Center" Font="Times New Roman, 16pt, style=Bold"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="51.25" Width="1047.06" Height="47.25">
+      <TextObject Name="Text2" Width="1047.06" Height="47.25" Dock="Fill" Text="[PracticeTypeName]" HorzAlign="Center" Font="Times New Roman, 16pt, style=Bold"/>
+    </PageHeaderBand>
+    <GroupHeaderBand Name="GroupHeader1" Top="102.5" Width="1047.06" Height="37.8" Condition="[Table.ModuleId]">
+      <TextObject Name="Text3" Width="217.35" Height="37.8" Text="[Table.ModuleId]" HorzAlign="Center" Font="Times New Roman, 16pt, style=Bold"/>
+      <GroupHeaderBand Name="GroupHeader2" Top="144.3" Width="1047.06" Height="37.8" Condition="[Table.PracticeTypeId]">
+        <TextObject Name="Text4" Width="217.35" Height="37.8" Text="[Table.PracticeTypeId]" HorzAlign="Center" Font="Times New Roman, 16pt, style=Bold"/>
+        <DataBand Name="Data1" Top="186.1" Width="1047.06" Height="75.6">
+          <TextObject Name="Text5" Left="9.45" Width="217.35" Height="37.8" Text="[Table.Institution]" HorzAlign="Center" Font="Times New Roman, 16pt, style=Bold"/>
+        </DataBand>
+        <GroupFooterBand Name="GroupFooter2" Top="265.7" Width="1047.06" Height="37.8"/>
+      </GroupHeaderBand>
+      <GroupFooterBand Name="GroupFooter1" Top="307.5" Width="1047.06" Height="37.8"/>
+    </GroupHeaderBand>
+    <PageFooterBand Name="PageFooter1" Top="349.3" Width="1047.06" Height="18.9"/>
+  </ReportPage>
+</Report>
