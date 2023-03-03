@@ -205,13 +205,16 @@ function addStudent() {
 }
 
 function Export() {
+    $(".last").hide();
+    $("#dt").val($("#content").html());
+    $(".last").show();
     //let wr = new TextEncoder();
     //var data = wr.encode($("#content").html());
-    $.ajax({
+    /*$.ajax({
         type: "post",
         url: "Examination/Export",
         data: { dt: $("#content").html() },
         success: function () { alert("!!!") },
         fail: function () { alert("(((") }
-    });
+    });*/
 }

@@ -8,6 +8,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using WebApp.Models;
 using Microsoft.Extensions.Hosting;
+using GrapeCity.Documents.Pdf;
+using GrapeCity.Documents.Html;
 
 namespace WebApp.Controllers
 {
@@ -149,8 +151,26 @@ namespace WebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Export(string dt)
         {
+            /*var doc = new GcPdfDocument();
+            // Add a new page to the document
+            var page = doc.Pages.Add();
+            // Take the Graphics instance of the page
+            var g = page.Graphics;
 
-            return File(new byte[0], "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "report.docx");
+            //Define GcHtmlBrowser instance
+            var path = new BrowserFetcher().GetDownloadedPath();
+            using (var browser = new GcHtmlBrowser(path))
+            {
+                // Render the HTML string on the PDF, using the DrawHtml method
+                var ok = g.DrawHtml(browser, string.Format("<html><head><style>\r\n{0}\r\n{1}\r\n</style></head><body>\r\n{2}\r\n</body></html>", System.IO.File.ReadAllText(Path.Combine(_environment.WebRootPath, "css", "site.css")), System.IO.File.ReadAllText(Path.Combine(_environment.WebRootPath, "lib/bootstrap/dist/css", "bootstrap.css")), dt), 72, 72, new HtmlToPdfFormat(false) { MaxPageWidth = 6.5f }, out SizeF size);
+
+                doc.Save(Path.Combine(_environment.ContentRootPath,"temp","test.pdf"));
+            }*/
+            ExpertPdf.HtmlToPdf.PdfConverter pdf = new ExpertPdf.HtmlToPdf.PdfConverter();
+            pdf.PdfDocumentOptions.PdfPageOrientation = ExpertPdf.HtmlToPdf.PDFPageOrientation.Landscape;
+            var ms = pdf.GetPdfBytesFromHtmlString(string.Format("<html><head><style>\r\n{0}\r\n{1}\r\n</style></head><body>\r\n{2}\r\n</body></html>", System.IO.File.ReadAllText(Path.Combine(_environment.WebRootPath, "css", "site.css")), System.IO.File.ReadAllText(Path.Combine(_environment.WebRootPath, "lib/bootstrap/dist/css", "bootstrap.css")), dt));
+
+            return File(ms, "application/pdf", "report.pdf");
         }
     }
 }
