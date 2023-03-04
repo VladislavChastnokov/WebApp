@@ -25,15 +25,15 @@
                                     <li class="nav-item">
                                         <a class="@string.Format("nav-link {0}", ViewContext.RouteData.Values["controller"].ToString().Equals("Administration") ? "active" : "")" href="@Url.Action("","Administration")">Администрирование</a>
                                     </li>
-                                    <li class="nav-item">
-                                        <a class="@string.Format("nav-link {0}", ViewContext.RouteData.Values["controller"].ToString().Equals("Reports") ? "active" : "")" href="@Url.Action("","Reports")">Отчеты</a>
-                                    </li>
+                                    <!--<li class="nav-item">
+                                        <a class="@string.Format("nav-link {0}", ViewContext.RouteData.Values["controller"].ToString().Equals("Examination") ? "active" : "")" href="@Url.Action("","Examination")">Отчеты</a>
+                                    </li>-->
                                 }
                                 break;
-                            case 2:
+                            default:
                                 {
                                     <li class="nav-item">
-                                        <a class="@string.Format("nav-link {0}", ViewContext.RouteData.Values["controller"].ToString().Equals("Examination") ? "active" : "")" href="@Url.Action("","Examination")">Успеваемость</a>
+                                        <a class="@string.Format("nav-link {0}", ViewContext.RouteData.Values["controller"].ToString().Equals("Examination") ? "active" : "")" href="@Url.Action("","Examination")">@string.Format("{0}", Context.Session.GetInt32("userRole") == 1 ? "Отчеты" : "Успеваемость")</a>
                                     </li>
                                 }
                                 break;

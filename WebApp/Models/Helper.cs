@@ -22,14 +22,14 @@
                     {
                         case 1:
                             {
-                                allowed = new string[] { "", "Administration", "Reports" }.Contains(page);
+                                allowed = new string[] { "", "Administration", "Examination" }.Contains(page);
                                 if (!allowed)
                                     redirectTo = "Administration";
                             }
                             break;
                         case 2:
                             {
-                                allowed = new string[] { "", "Examination", "Reports" }.Contains(page);
+                                allowed = new string[] { "", "Examination" }.Contains(page);
                                 if (!allowed)
                                     redirectTo = "Examination";
                             }
