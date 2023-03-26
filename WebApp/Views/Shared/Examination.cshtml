@@ -11,12 +11,13 @@
                         @string.Format("{0} {1} {2}", student.LastName, student.FirstName, student.MiddleName)
                     </th>
                 }
-            <th class="last">
+            
                 @if(Context.Session.GetInt32("userRole") == 2)
                 {
+                <th class="last">
                     <button type="button" class="btn btn-sm btn-link" data-bs-toggle="modal" data-bs-target="#studentModal" onclick="readyStudentForm(-1, @ViewBag.SpecialityId, '', '', '', @ViewBag.Kurs)"><img src="/images/add.jpg" /></button>
+                </th>
                 }
-            </th>
             <th></th>
         </tr>
     </thead>
@@ -39,7 +40,10 @@
                         }
                     </td>
                 }
-                <td class="last"></td>
+                @if (Context.Session.GetInt32("userRole") == 2)
+                {
+                    <td class="last"></td>
+                }
                 <td><div id="@string.Format("avgD{0}", disc.Key.Id)" class="p-1">@string.Format("{0}", a.HasValue && a.Value > 0 ? Math.Round(a.Value) : "")</div></td>
             </tr>
         }
@@ -53,7 +57,10 @@
                 var a = avg.Average(d => d.Mark);
                 <td><div id="@string.Format("avgS{0}-avgDM{1}-avgPr{2}", avg.Key.Id, ViewBag.Module, Model.Key ?? 0)" class="p-1">@string.Format("{0}", a.HasValue && a.Value > 0 ? Math.Round(a.Value) : "")</div></td>
             }
-            <td class="last"></td>
+            @if (Context.Session.GetInt32("userRole") == 2)
+                {
+                    <td class="last"></td>
+                }
             <td></td>
         </tr>
     </tfoot>

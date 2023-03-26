@@ -9,11 +9,11 @@ namespace WebApp.Controllers
 {
     public class AdministrationController : Controller
     {
-        private readonly SqliteContext _context;
+        private readonly DContext _context;
 
         private readonly string pageName = "Administration";
 
-        public AdministrationController(SqliteContext context)
+        public AdministrationController(DContext context)
         {
             _context = context;
         }
@@ -169,11 +169,17 @@ namespace WebApp.Controllers
             return RedirectToAction("");
         }
 
-        public async Task<IActionResult> Plan(int id)
+        public async Task<IActionResult> Speciality(int id)
         {
             var access = Helper.ShowPage(HttpContext.Session, pageName, out string redirect);
             if (!access)
                 return RedirectToAction("", redirect);
+            //список студентов
+            var students = await _context.Students.Where(s => s.SpecialityId == id).ToListAsync();
+            //список модулей дисциплин
+            var modules = await _context.DisciplineModules.ToListAsync();
+            //список дисциплин
+            var disciplines = await _context.Disciplines.Where(d => d.Module.SpecialityId == id).Include(d => d.PracticeType).ToListAsync();
             //Направление/специальность для отображения
             var sp = await _context.Specialities.FirstOrDefaultAsync(x => x.Id == id);
             ViewBag.Speciality = string.Format("{0} {1}", sp?.SpecialityCode, sp?.SpecialityName);
@@ -190,12 +196,6 @@ namespace WebApp.Controllers
             ViewBag.SemestersSelect = new SelectList(await _context.Semesters.ToListAsync(), "Id", "Caption");
             //Список модулей для формы добавления дисциплиеы
             ViewBag.ModulesSelect = new SelectList(await _context.DisciplineModules.Where(dm => dm.SpecialityId == id).ToListAsync(), "Id", "ModuleName");
-            //список студентов
-            var students = await _context.Students.Where(s => s.SpecialityId == id).ToListAsync();
-            //список модулей дисциплин
-            var modules = await _context.DisciplineModules.ToListAsync();
-            //список дисциплин
-            var disciplines = await _context.Disciplines.Where(d => d.Module.SpecialityId == id).Include(d => d.PracticeType).ToListAsync();
             //анонимный класс для передачи в представление без строго типизированной модели
             var model = new { Disciplines = disciplines, Modules = modules, Students = students };
             return View(model);

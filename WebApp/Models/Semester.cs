@@ -7,7 +7,8 @@ public partial class Semester
 {
     public int Id { get; set; }
 
-    public string? Caption { get; set; }
+    public string Caption { get; set; } = null!;
+
     public int Kurs { get; set; }
 
     public virtual ICollection<Discipline> Disciplines { get; } = new List<Discipline>();

@@ -12,7 +12,7 @@
                     @if (ViewBag.Error != null && ViewBag.Error)
                     {
                         <div class="form-outline mb-4">
-                            <label class="form-label w-100 text-center h4 text-danger h3">Неверный логин или пароль!</label>
+                            <label class="form-label w-100 text-center h4 text-danger h3">@ViewBag.ErrorMessage</label>
                         </div>
                     }
                     <div class="form-outline mb-4">

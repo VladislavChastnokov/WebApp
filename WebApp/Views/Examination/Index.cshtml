@@ -7,7 +7,7 @@
 {
     <div id="content" class="container w-100 bg-light mt-2">
         <p class="text-center h4 mb-4">@ViewBag.Institution</p>
-        <p class="text-center h5">Отчет<br />по @string.Format("{0} практике по профессиональным модулям:", Model.All(x=> x.Discipline.PracticeTypeId.HasValue) ? string.Format("{0}{1}{2}", Model.Any(x=> x.Discipline.PracticeTypeId==1) ? "учебной" : "", Model.Any(x=> x.Discipline.PracticeTypeId==1) && Model.Any(x=> x.Discipline.PracticeTypeId==2) ? " и " : "", Model.Any(x=> x.Discipline.PracticeTypeId==2) ? "производственной " : "") : "преддипломной")</p>
+        <p class="text-center h5">@ViewBag.Header</p>
         <p class="text-justify">
             @foreach (var module in Model.Select(x => x.Discipline.Module).Distinct().OrderBy(x=> x.Id))
             {
@@ -16,10 +16,15 @@
             <strong>@string.Format("Курс: {0}", ViewBag.Kurs)</strong><br/>
             @if (ViewBag.Kurs > 2)
             {
-                    <strong>@string.Format("Семестр: {0}", ViewBag.Semester)</strong>
+                <strong>@string.Format("{0}{1}", int.TryParse(ViewBag.Semester.ToString(), out int _) ? "Семестр: " : "", ViewBag.Semester)</strong>
                     <br />
             }
             <strong>@string.Format("Специальность: {0}", ViewBag.Speciality)</strong>
+            @if(ViewBag.ExportError != null)
+            {
+                <br/>
+                <strong class="text-danger">@ViewBag.ExportError</strong>
+            }
         </p>
         @{
             int k = 1;
@@ -43,11 +48,11 @@
                 k++;
             }
         }
-    </div>
-    <div class="container bg-light">
         <form action="@Url.Action("Export", "Examination")" method="post">
-            <input type="hidden" name="dt" id="dt" value=""/>
-            <button type="submit" class="btn btn-sm btn-primary" onclick="Export()">Скачать</button>
+            <input type="hidden" name="spec" value="@ViewBag.SpecialityId" />
+            <input type="hidden" name="sem" value="@ViewBag.SemesterId" />
+            <input type="hidden" name="header" value="@ViewBag.Header" />
+            <button type="submit" class="btn btn-sm btn-primary">Скачать</button>
         </form>
     </div>
 

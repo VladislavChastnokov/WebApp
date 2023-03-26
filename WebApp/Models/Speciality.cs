@@ -7,11 +7,11 @@ public partial class Speciality
 {
     public int Id { get; set; }
 
+    public int InstitutionId { get; set; }
+
     public string SpecialityCode { get; set; } = null!;
 
     public string SpecialityName { get; set; } = null!;
-
-    public int InstitutionId { get; set; }
 
     public virtual ICollection<DisciplineModule> DisciplineModules { get; } = new List<DisciplineModule>();
 

@@ -8,8 +8,9 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using WebApp.Models;
 using Microsoft.Extensions.Hosting;
-using GrapeCity.Documents.Pdf;
-using GrapeCity.Documents.Html;
+using System.Data;
+using FastReport.Export.PdfSimple;
+using System;
 
 namespace WebApp.Controllers
 {
@@ -17,11 +18,11 @@ namespace WebApp.Controllers
     {
         private readonly string pageName = "Examination";
 
-        private readonly SqliteContext _context;
+        private readonly DContext _context;
         private readonly IWebHostEnvironment _environment;
         private readonly IConfiguration _configuration;
 
-        public Examination(SqliteContext context, IWebHostEnvironment environment, IConfiguration config)
+        public Examination(DContext context, IWebHostEnvironment environment, IConfiguration config)
         {
             _context = context;
             _environment = environment;
@@ -33,9 +34,8 @@ namespace WebApp.Controllers
             var access = Helper.ShowPage(HttpContext.Session, pageName, out string redirect);
             if (!access)
                 return RedirectToAction("", redirect);
-            ViewBag.selectFormData = await _context.InstitutionAssignments.Include(i => i.User).Include(i => i.Institution).Where(i => i.UserId == HttpContext.Session.GetInt32("userId") || i.User.RoleId == 1).Select(x => x.Institution).ToListAsync();
-            ViewBag.Controller = "Examination";
-            ViewBag.ButtonName = "Показать";
+            ViewBag.selectFormData = await _context.Institutions.Include(i => i.InstitutionAssignments).ThenInclude(ia => ia.User).Where(i => i.InstitutionAssignments.FirstOrDefault(x => x.InstitutionId == i.Id && x.UserId == HttpContext.Session.GetInt32("userRole")) != null || HttpContext.Session.GetInt32("userRole")==1).ToListAsync();
+            ViewBag.ExportError = TempData["ExportError"]?.ToString();
             if (inst.HasValue && spec.HasValue && sem.HasValue)
             {
                 var intstitution = await _context.Institutions.FindAsync(inst);
@@ -44,21 +44,26 @@ namespace WebApp.Controllers
                 ViewBag.Speciality = string.Format("{0} {1}", speciality?.SpecialityCode, speciality?.SpecialityName);
                 ViewBag.SpecialityId = speciality?.Id;
                 var semester = await _context.Semesters.FindAsync(sem);
+                ViewBag.SemesterId = semester?.Id;
                 ViewBag.Semester = semester?.Id == 7 ? "8" : semester?.Caption;
                 var kurs = semester?.Kurs;
                 ViewBag.Kurs = kurs;
-                var disciplines = await _context.Disciplines.Include(d => d.Module).Where(d => d.Module.SpecialityId == spec && d.Semester == sem).ToListAsync();
                 var marks = await _context.Examinations.Include(e => e.MarkNavigation).Include(e => e.Student).Include(e => e.Discipline).ThenInclude(m => m.Module).Where(m => m.Discipline.Module.SpecialityId == spec && m.Discipline.Semester == sem && m.Student.Kurs == kurs).ToListAsync();
                 //Если студенты не были заполнены заранее
                 if(marks.Count == 0)
                 {
-                    marks.AddRange(disciplines.Select(x => new Models.Examination() { Discipline = x }));
+                    marks.AddRange(_context.Disciplines.Include(d => d.Module).Where(d => d.Module.SpecialityId == spec && d.Semester == sem).Select(x => new Models.Examination() { Discipline = x }));
                 }
+                ViewBag.Header = string.Format("Отчет по {0} практике по профессиональным модулям:", marks.All(x => x.Discipline.PracticeTypeId.HasValue) ? string.Format("{0}{1}{2}", marks.Any(x => x.Discipline.PracticeTypeId == 1) ? "учебной" : "", marks.Any(x => x.Discipline.PracticeTypeId == 1) && marks.Any(x => x.Discipline.PracticeTypeId == 2) ? " и " : "", marks.Any(x => x.Discipline.PracticeTypeId == 2) ? "производственной " : "") : "преддипломной");
                 return View(marks);
             }
             return View();
         }
-
+        /// <summary>
+        /// Спсок специальностей для ajax функции
+        /// </summary>
+        /// <param name="Id">Идентификатор учебного заведения, выбранный на форме</param>
+        /// <returns>список специальностей</returns>
         public async Task<object?> Specialities(int Id)
         {
             var access = Helper.ShowPage(HttpContext.Session, pageName, out string redirect);
@@ -67,7 +72,11 @@ namespace WebApp.Controllers
             var list = await _context.Specialities.Where(s => s.InstitutionId == Id).Select(s => new { s.Id, Name = string.Format("{0} {1}", s.SpecialityCode, s.SpecialityName) }).ToListAsync();
             return list;
         }
-
+        /// <summary>
+        /// Спсок семестров для ajax функции
+        /// </summary>
+        /// <param name="Id">Идентификатор специальности, выбранный на форме</param>
+        /// <returns>список семестров</returns>
         public async Task<object?> Semesters(int Id)
         {
             var access = Helper.ShowPage(HttpContext.Session, pageName, out string redirect);
@@ -93,22 +102,6 @@ namespace WebApp.Controllers
             }
             else
                 throw new ArgumentNullException();
-        }
-
-        [HttpPost]
-        public async Task<bool> CheckMarkInput(int? value)
-        {
-            var access = Helper.ShowPage(HttpContext.Session, pageName, out _);
-            if (!access)
-                return false;
-            try
-            {
-                return await _context.Marks.FindAsync(value) != null;
-            }
-            catch
-            {
-                return false;
-            }
         }
 
         [HttpPost]
@@ -147,30 +140,30 @@ namespace WebApp.Controllers
             
             return PartialView(mark);
         }
-
         [HttpPost]
-        public async Task<IActionResult> Export(string dt)
+        public async Task<IActionResult> Export(int spec, int sem, string header)
         {
-            /*var doc = new GcPdfDocument();
-            // Add a new page to the document
-            var page = doc.Pages.Add();
-            // Take the Graphics instance of the page
-            var g = page.Graphics;
-
-            //Define GcHtmlBrowser instance
-            var path = new BrowserFetcher().GetDownloadedPath();
-            using (var browser = new GcHtmlBrowser(path))
+            try
             {
-                // Render the HTML string on the PDF, using the DrawHtml method
-                var ok = g.DrawHtml(browser, string.Format("<html><head><style>\r\n{0}\r\n{1}\r\n</style></head><body>\r\n{2}\r\n</body></html>", System.IO.File.ReadAllText(Path.Combine(_environment.WebRootPath, "css", "site.css")), System.IO.File.ReadAllText(Path.Combine(_environment.WebRootPath, "lib/bootstrap/dist/css", "bootstrap.css")), dt), 72, 72, new HtmlToPdfFormat(false) { MaxPageWidth = 6.5f }, out SizeF size);
+                FastReport.Report rep = new FastReport.Report();
+                rep.Load(Path.Combine(_environment.ContentRootPath, "App_Data", "report.frx"));
+                rep.Dictionary.Connections[0].ConnectionString = _configuration.GetConnectionString("sql");
+                rep.SetParameterValue("sem", sem);
+                rep.SetParameterValue("spec", spec);
+                rep.SetParameterValue("PracticeTypeName", header);
+                rep.Prepare();
+                PDFSimpleExport pdf = new PDFSimpleExport();
+                var ms = new MemoryStream();
+                pdf.Export(rep, ms);
 
-                doc.Save(Path.Combine(_environment.ContentRootPath,"temp","test.pdf"));
-            }*/
-            ExpertPdf.HtmlToPdf.PdfConverter pdf = new ExpertPdf.HtmlToPdf.PdfConverter();
-            pdf.PdfDocumentOptions.PdfPageOrientation = ExpertPdf.HtmlToPdf.PDFPageOrientation.Landscape;
-            var ms = pdf.GetPdfBytesFromHtmlString(string.Format("<html><head><style>\r\n{0}\r\n{1}\r\n</style></head><body>\r\n{2}\r\n</body></html>", System.IO.File.ReadAllText(Path.Combine(_environment.WebRootPath, "css", "site.css")), System.IO.File.ReadAllText(Path.Combine(_environment.WebRootPath, "lib/bootstrap/dist/css", "bootstrap.css")), dt));
-
-            return File(ms, "application/pdf", "report.pdf");
+                return File(ms.ToArray(), "application/pdf", "отчет.pdf");
+            }
+            catch(Exception ex)
+            {
+                TempData["ExportError"] = ex.Message;
+                return Redirect(Request.Headers["Referer"].ToString());
+            }
+            
         }
     }
 }

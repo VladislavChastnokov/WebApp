@@ -58,17 +58,17 @@
                                 }
                                 <tr>
                                     <td colspan="2">
-                                        <a class="link-success cursor-pointer text-decoration-none" data-bs-toggle="modal" data-bs-target="#isntitutionAddAssignment" onclick="setId('#idField',@user.Id)">+ Добавить</a>
+                                        <a class="link-success cursor-pointer text-decoration-none" data-bs-toggle="modal" data-bs-target="#isntitutionAddAssignment" onclick="setField('#idField',@user.Id)">+ Добавить</a>
                                     </td>
                                 </tr>
                             </table>
                         }
                     </td>
                     <td>
-                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#changePassword" onclick="setId(@user.Id)">Изменить пароль</button>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#changePassword" onclick="setField('#userIdField',@user.Id)">Изменить пароль</button>
                     </td>
                     <td>
-                        <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteConfirmation" onclick="setRecordForDeletion('User', @user.Id)"><img src="/images/trash.png" /></button>
+                        <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteConfirmation" onclick="setRecordForDeletion('User', @user.Id)" @string.Format("{0}", Context.Session.GetInt32("userId")==user.Id ? "disabled" : "")><img src="/images/trash.png" /></button>
                     </td>
                 </tr>
             }

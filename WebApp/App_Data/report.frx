@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="03/01/2023 13:47:26" ReportInfo.Modified="03/01/2023 15:03:50" ReportInfo.CreatorVersion="2023.1.0.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="03/11/2023 14:54:16" ReportInfo.Modified="03/12/2023 18:02:28" ReportInfo.CreatorVersion="2023.1.0.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,32 +19,110 @@ namespace FastReport
   public class ReportScript
   {
 
-    private void Page1_ManualBuild(object sender, EventArgs e)
+    private void Table1_ManualBuild(object sender, EventArgs e)
     {
-      
+      DataSourceBase rowData = Report.GetDataSource(&quot;DisciplineModules&quot;);
+      rowData.Init();
+      while (rowData.HasMoreRows)
+      {
+        Table1.PrintRow(0);
+        Table1.PrintColumns();
+        rowData.Next();
+      }
+    }
+
+
+    private void GroupHeader2_BeforePrint(object sender, EventArgs e)
+    {
+      Matrix1.Filter = String.Format(&quot;[Table.ModuleId]=={0} &amp;&amp; [Table.PracticeTypeId]=={1}&quot;,Report.GetColumnValue(&quot;Table.ModuleId&quot;),Report.GetColumnValue(&quot;Table.PracticeTypeId&quot;));
     }
   }
 }
 </ScriptText>
-  <Dictionary/>
-  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" Watermark.Font="Arial, 60pt" ManualBuildEvent="Page1_ManualBuild">
-    <ReportTitleBand Name="ReportTitle1" Width="1047.06" Height="47.25">
-      <TextObject Name="Text1" Width="1047.06" Height="47.25" Dock="Fill" Text="[Table.Institution]" HorzAlign="Center" Font="Times New Roman, 16pt, style=Bold"/>
+  <Dictionary>
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqM7gJFg/iaLrqMhRfGy5lGlKbvpcm+SKH0qvkCkA8GzvzAvMiaAU7w1otoAf77DGzTwgGiGJDsK6wZ+iDySkrp+mNljqJ/wMbWs9hJLneoVAKCd0B8a02L6FNOdsgZigjic5W+00Bi/aVXxyBIYffFkyr7GO4UesBlLxEVvON38bV+9bi+tYqEy6Xwl6bxDnIl+58kPSHDKacpFF1RsslKA==">
+      <TableDataSource Name="Table" DataType="System.Int32" Enabled="true" SelectCommand="select * from(&#13;&#10;select InstitutionName, &#13;&#10;SpecialityCode, &#13;&#10;SpecialityName, &#13;&#10;case when sem.Id=7 then '8' else sem.Caption end as Caption,&#13;&#10;sem.Kurs,&#13;&#10;case when PracticeTypeId is null then ModuleCode + ' ' +ModuleName&#13;&#10;else 'Виды и объем работ, оценка за выполненные обучающимся работы во время '+ case PracticeTypeId when 1 then 'учебной практики' when 2 then 'произовдственной практики' end + ' по ' + ModuleCode + ' ' + ModuleName end as PracticeType,&#13;&#10;ModuleId,&#13;&#10;DisciplineName,&#13;&#10;e.DisciplineId,&#13;&#10;StudentId,&#13;&#10;LastName + ' '+ FirstName + isnull(' '+MIddleName,'') as FIO,&#13;&#10;Mark,&#13;&#10;PracticeTypeId&#13;&#10;from Examination e&#13;&#10;join Disciplines d on d.id=e.DisciplineId&#13;&#10;join Semesters sem on sem.id=d.Semester&#13;&#10;join Students st on st.id=e.StudentId and st.kurs=sem.Kurs&#13;&#10;join DisciplineModules dm on dm.id=d.ModuleId&#13;&#10;join Specialities s on s.id=dm.SpecialityId&#13;&#10;join Institutions i on i.id=s.InstitutionId&#13;&#10;where s.Id=@spec and d.Semester=@sem&#13;&#10;union all&#13;&#10;select InstitutionName,SpecialityCode,SpecialityName,case when sem.Id=7 then '8' else sem.Caption end as Caption,&#13;&#10;sem.Kurs,&#13;&#10;case when PracticeTypeId is null then ModuleCode + ' ' +ModuleName&#13;&#10;else 'Виды и объем работ, оценка за выполненные обучающимся работы во время '+ case PracticeTypeId when 1 then 'учебной практики' when 2 then 'произовдственной практики' end + ' по ' + ModuleCode + ' ' + ModuleName end as PracticeType,&#13;&#10;ModuleId,&#13;&#10;'' as DisciplineName,&#13;&#10;2147483647 as DisciplineId,&#13;&#10;StudentId,&#13;&#10;LastName + ' '+ FirstName + isnull(' '+MIddleName,'') as FIO,&#13;&#10;AVG(Mark) as Mark,&#13;&#10;PracticeTypeId&#13;&#10;from Examination e&#13;&#10;join Disciplines d on d.id=e.DisciplineId&#13;&#10;join Semesters sem on sem.id=d.Semester&#13;&#10;join Students st on st.id=e.StudentId and st.kurs=sem.Kurs&#13;&#10;join DisciplineModules dm on dm.id=d.ModuleId&#13;&#10;join Specialities s on s.id=dm.SpecialityId&#13;&#10;join Institutions i on i.id=s.InstitutionId&#13;&#10;where s.Id=@spec and d.Semester=@sem&#13;&#10;group by InstitutionName,SpecialityCode,SpecialityName,sem.Id,sem.Caption,sem.Kurs,PracticeTypeId,ModuleCode,ModuleName,ModuleId,StudentId,LastName,FirstName,MIddleName&#13;&#10;union all&#13;&#10;select InstitutionName,SpecialityCode,SpecialityName,case when sem.Id=7 then '8' else sem.Caption end as Caption,&#13;&#10;sem.Kurs,&#13;&#10;case when PracticeTypeId is null then ModuleCode + ' ' +ModuleName&#13;&#10;else 'Виды и объем работ, оценка за выполненные обучающимся работы во время '+ case PracticeTypeId when 1 then 'учебной практики' when 2 then 'произовдственной практики' end + ' по ' + ModuleCode + ' ' + ModuleName end as PracticeType,&#13;&#10;ModuleId,&#13;&#10;DisciplineName,&#13;&#10;DisciplineId,&#13;&#10;2147483647 as StudentId,&#13;&#10;'' as FIO,&#13;&#10;AVG(Mark) as Mark,&#13;&#10;PracticeTypeId&#13;&#10;from Examination e&#13;&#10;join Disciplines d on d.id=e.DisciplineId&#13;&#10;join Semesters sem on sem.id=d.Semester&#13;&#10;join Students st on st.id=e.StudentId and st.kurs=sem.Kurs&#13;&#10;join DisciplineModules dm on dm.id=d.ModuleId&#13;&#10;join Specialities s on s.id=dm.SpecialityId&#13;&#10;join Institutions i on i.id=s.InstitutionId&#13;&#10;where s.Id=@spec and d.Semester=@sem&#13;&#10;group by InstitutionName,SpecialityCode,SpecialityName,sem.Id,sem.Caption,sem.Kurs,PracticeTypeId,ModuleCode,ModuleName,ModuleId,disciplineId,DisciplineName&#13;&#10;) a&#13;&#10;order by ModuleId,PracticeTypeId,DisciplineId,StudentId">
+        <Column Name="InstitutionName" DataType="System.String"/>
+        <Column Name="SpecialityCode" DataType="System.String"/>
+        <Column Name="SpecialityName" DataType="System.String"/>
+        <Column Name="Caption" DataType="System.String"/>
+        <Column Name="Kurs" DataType="System.Int32"/>
+        <Column Name="ModuleId" DataType="System.Int32"/>
+        <Column Name="DisciplineName" DataType="System.String"/>
+        <Column Name="DisciplineId" DataType="System.Int32"/>
+        <Column Name="StudentId" DataType="System.Int32"/>
+        <Column Name="Mark" DataType="System.Int32"/>
+        <Column Name="PracticeTypeId" DataType="System.Int32"/>
+        <Column Name="PracticeType" DataType="System.String"/>
+        <Column Name="FIO" DataType="System.String"/>
+        <CommandParameter Name="@spec" DataType="8" Expression="[spec]" DefaultValue="1"/>
+        <CommandParameter Name="@sem" DataType="8" Expression="[sem]" DefaultValue="1"/>
+      </TableDataSource>
+      <TableDataSource Name="DisciplineModules" DataType="System.Int32" Enabled="true" TableName="DisciplineModules" SelectCommand="select * from DisciplineModules where SpecialityId=@spec">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="SpecialityId" DataType="System.Int32"/>
+        <Column Name="ModuleCode" DataType="System.String"/>
+        <Column Name="ModuleName" DataType="System.String"/>
+        <CommandParameter Name="@spec" DataType="8" Expression="[spec]" DefaultValue="1"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Parameter Name="spec" DataType="System.Int32" Expression="1"/>
+    <Parameter Name="sem" DataType="System.Int32" Expression="1"/>
+  </Dictionary>
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" Watermark.Font="Arial, 60pt">
+    <ReportTitleBand Name="ReportTitle1" Width="1047.06" Height="122.85" CanGrow="true" CanShrink="true" PrintOn="FirstPage">
+      <TextObject Name="Text1" Width="1047.06" Height="47.25" Dock="Top" Text="[Table.InstitutionName]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 16pt, style=Bold"/>
+      <TextObject Name="Text2" Top="47.25" Width="1047.06" Height="47.25" Dock="Top" Text="[PracticeTypeName]" HorzAlign="Center" Font="Times New Roman, 14pt"/>
+      <TableObject Name="Table1" Top="94.5" Width="793.8" Height="28.35" ManualBuildEvent="Table1_ManualBuild">
+        <TableColumn Name="Column1" MaxWidth="1020.6" Width="793.8" AutoSize="true"/>
+        <TableRow Name="Row1" MaxHeight="56.7" Height="28.35" AutoSize="true">
+          <TableCell Name="Cell1" Text="[DisciplineModules.ModuleCode]. [DisciplineModules.ModuleName]" Font="Times New Roman, 14pt"/>
+        </TableRow>
+      </TableObject>
     </ReportTitleBand>
-    <PageHeaderBand Name="PageHeader1" Top="51.25" Width="1047.06" Height="47.25">
-      <TextObject Name="Text2" Width="1047.06" Height="47.25" Dock="Fill" Text="[PracticeTypeName]" HorzAlign="Center" Font="Times New Roman, 16pt, style=Bold"/>
+    <PageHeaderBand Name="PageHeader1" Top="126.85" Width="1047.06" Height="66.15" CanGrow="true" CanShrink="true" PrintOn="FirstPage">
+      <TextObject Name="Text4" Width="1047.06" Height="66.15" Dock="Fill" CanGrow="true" GrowToBottom="true" Text="Курс: [Table.Kurs]&#13;&#10;[IIf([Table.Kurs] ==2,Format(&quot;Специальность: {0} {1}&quot;,[Table.SpecialityCode],[Table.SpecialityName]),Format(&quot;Семестр: {0}&quot;,[Table.Caption]))]&#13;&#10;[IIf([Table.Kurs] &gt;2,Format(&quot;Специальность: {0} {1}&quot;,[Table.SpecialityCode],[Table.SpecialityName]),Format(&quot;&quot;))]&#13;&#10;&#13;&#10;&#13;&#10;&#13;&#10;&#13;&#10;&#13;&#10;&#13;&#10;&#13;&#10;&#13;&#10;" Font="Times New Roman, 14pt, style=Bold" TextRenderType="HtmlTags"/>
     </PageHeaderBand>
-    <GroupHeaderBand Name="GroupHeader1" Top="102.5" Width="1047.06" Height="37.8" Condition="[Table.ModuleId]">
-      <TextObject Name="Text3" Width="217.35" Height="37.8" Text="[Table.ModuleId]" HorzAlign="Center" Font="Times New Roman, 16pt, style=Bold"/>
-      <GroupHeaderBand Name="GroupHeader2" Top="144.3" Width="1047.06" Height="37.8" Condition="[Table.PracticeTypeId]">
-        <TextObject Name="Text4" Width="217.35" Height="37.8" Text="[Table.PracticeTypeId]" HorzAlign="Center" Font="Times New Roman, 16pt, style=Bold"/>
-        <DataBand Name="Data1" Top="186.1" Width="1047.06" Height="75.6">
-          <TextObject Name="Text5" Left="9.45" Width="217.35" Height="37.8" Text="[Table.Institution]" HorzAlign="Center" Font="Times New Roman, 16pt, style=Bold"/>
-        </DataBand>
-        <GroupFooterBand Name="GroupFooter2" Top="265.7" Width="1047.06" Height="37.8"/>
+    <GroupHeaderBand Name="GroupHeader1" Top="197" Width="1047.06" CanGrow="true" Condition="[Table.ModuleId]">
+      <GroupHeaderBand Name="GroupHeader2" Top="201" Width="1047.06" Height="21.57" CanGrow="true" CanShrink="true" BeforePrintEvent="GroupHeader2_BeforePrint" StartNewPage="true" Condition="[Table.PracticeTypeId]">
+        <TextObject Name="Text3" Width="1047.06" Height="21.57" Dock="Fill" CanGrow="true" GrowToBottom="true" Text="	[Table.PracticeType]&#13;&#10;" VertAlign="Center" Font="Times New Roman, 14pt"/>
+        <DataBand Name="Data1" Top="226.57" Width="1047.06" CanGrow="true" CanShrink="true" CanBreak="true" DataSource="Table" KeepTogether="true"/>
+        <GroupFooterBand Name="GroupFooter2" Top="230.57" Width="1047.06" Height="78.27" CanGrow="true" CanShrink="true" CanBreak="true">
+          <MatrixObject Name="Matrix1" Width="1047.06" Height="78.27" Dock="Fill" FixedRows="2" FixedColumns="2" DataSource="Table" ModifyResultEvent="">
+            <MatrixColumns>
+              <Header Expression="[Table.StudentId]" Totals="false"/>
+              <Header Expression="[Table.FIO]" Totals="false"/>
+            </MatrixColumns>
+            <MatrixRows>
+              <Header Expression="[Table.DisciplineId]" Totals="false"/>
+              <Header Expression="[Table.DisciplineName]" Totals="false"/>
+            </MatrixRows>
+            <MatrixCells>
+              <Cell Expression="[Table.Mark]" Function="None"/>
+            </MatrixCells>
+            <TableColumn Name="Column2" MaxWidth="0" Width="0" AutoSize="true"/>
+            <TableColumn Name="Column3" MaxWidth="415.8" Width="112.48" AutoSize="true"/>
+            <TableColumn Name="Column4" MaxWidth="37.8" Width="37.8" AutoSize="true"/>
+            <TableRow Name="Row2" MaxHeight="0" Height="0" AutoSize="true">
+              <TableCell Name="Cell2" Text="DisciplineId" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt" RowSpan="2"/>
+              <TableCell Name="Cell3" Border.Lines="All" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt" RowSpan="2"/>
+              <TableCell Name="Cell6" Text="[StudentId]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+            </TableRow>
+            <TableRow Name="Row3" MaxHeight="113.4" Height="39.97" AutoSize="true">
+              <TableCell Name="Cell4" Font="Arial, 10pt"/>
+              <TableCell Name="Cell5" Font="Arial, 10pt"/>
+              <TableCell Name="Cell7" Border.Lines="All" Text="[FIO]" HorzAlign="Center" VertAlign="Center" Angle="270" Font="Arial, 10pt"/>
+            </TableRow>
+            <TableRow Name="Row4" Height="35.33" AutoSize="true">
+              <TableCell Name="Cell8" Text="[DisciplineId]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+              <TableCell Name="Cell9" Border.Lines="All" Text="[DisciplineName]" VertAlign="Center" Font="Arial, 10pt"/>
+              <TableCell Name="Cell10" Border.Lines="All" Text="[Mark]" HideZeros="true" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt"/>
+            </TableRow>
+          </MatrixObject>
+        </GroupFooterBand>
       </GroupHeaderBand>
-      <GroupFooterBand Name="GroupFooter1" Top="307.5" Width="1047.06" Height="37.8"/>
+      <GroupFooterBand Name="GroupFooter1" Top="312.84" Width="1047.06"/>
     </GroupHeaderBand>
-    <PageFooterBand Name="PageFooter1" Top="349.3" Width="1047.06" Height="18.9"/>
+    <PageFooterBand Name="PageFooter1" Top="316.84" Width="1047.06"/>
   </ReportPage>
 </Report>
