@@ -15,7 +15,7 @@
         <thead>
             <tr>
                 <th colspan="3">
-                    @semester.Caption
+                    @string.Format("{0}{1}",semester.Caption, int.TryParse(semester.Caption, out int _) ? " семестр" : "")
                 </th>
             </tr>
         </thead>

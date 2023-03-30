@@ -14,7 +14,7 @@ using System;
 
 namespace WebApp.Controllers
 {
-    public class Examination : Controller
+    public class ExaminationController : Controller
     {
         private readonly string pageName = "Examination";
 
@@ -22,7 +22,7 @@ namespace WebApp.Controllers
         private readonly IWebHostEnvironment _environment;
         private readonly IConfiguration _configuration;
 
-        public Examination(DContext context, IWebHostEnvironment environment, IConfiguration config)
+        public ExaminationController(DContext context, IWebHostEnvironment environment, IConfiguration config)
         {
             _context = context;
             _environment = environment;
